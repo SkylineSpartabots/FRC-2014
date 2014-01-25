@@ -17,10 +17,17 @@ void MainRobot::InitializeHardware() {
 	m_rightStick = new Joystick(Ports::Computer::Usb2);
 	
 	m_clawMotor = new Victor(Ports::DigitalSidecar::Pwm5);
+	
+	m_shooterLeft1 = new Victor(Ports::DigitalSidecar::Pwm6);
+	m_shooterLeft2 = new Victor(Ports::DigitalSidecar::Pwm7);
+	m_shooterRight1 = new Victor(Ports::DigitalSidecar::Pwm8);
+	m_shooterRight2 = new Victor(Ports::DigitalSidecar::Pwm9);
+	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio1);
 }
 
 void MainRobot::InitializeSoftware() {
 	m_claw = new Claw(m_clawMotor);
+	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1, m_shooterRight2, m_shooterLimitSwitch);
 }
 
 /**

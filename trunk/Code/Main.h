@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include "Ports.h"
 #include "Subsystems/Claw/Claw.h"
+#include "Subsystems/Shooter/Shooter.h"
 
 class MainRobot : public SimpleRobot
 {
@@ -11,7 +12,14 @@ private:
 	
 	Victor *m_clawMotor;
 	
-	Claw *m_claw;
+	Victor *m_shooterLeft1;
+	Victor *m_shooterLeft2;
+	Victor *m_shooterRight1;
+	Victor *m_shooterRight2;
+	DigitalInput *m_shooterLimitSwitch;
+	
+	Claw *m_claw;	
+	Shooter *m_shooter;
 	
 public:
 	MainRobot();
