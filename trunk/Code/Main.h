@@ -10,7 +10,10 @@ private:
 	Joystick *m_rightStick;
 	Joystick *m_leftStick;
 	
-	Victor *m_clawMotor;
+	Compressor *m_compressor;
+	Solenoid *m_solenoid;
+	
+	/*Victor *m_clawMotor;
 	
 	Victor *m_shooterLeft1;
 	Victor *m_shooterLeft2;
@@ -19,7 +22,7 @@ private:
 	DigitalInput *m_shooterLimitSwitch;
 	
 	Claw *m_claw;	
-	Shooter *m_shooter;
+	Shooter *m_shooter;*/
 	
 public:
 	MainRobot();
@@ -28,6 +31,5 @@ public:
 	void Autonomous();
 	void OperatorControl();
 	void Test();
-	
 };
 

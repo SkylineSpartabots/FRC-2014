@@ -35,7 +35,7 @@ void Collector::SpinOutwards() {
 }
 
 void Collector::SpinStop() {
-	m_motor->Set(0);
+	m_motor->Set(0.0);
 }
 
 void Collector::PistonUp() {
