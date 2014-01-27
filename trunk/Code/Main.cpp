@@ -35,20 +35,31 @@ void MainRobot::InitializeSoftware() {
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1, m_shooterRight2, m_shooterLimitSwitch);*/
 }
 
-/**
- * Drive left & right motors for 2 seconds then stop
- */
 void MainRobot::Autonomous()
 {
 	m_drive->SetSafetyEnabled(false);
-	m_drive->Drive(-0.5, 0.0); 	// drive forwards half speed
-	Wait(2.0); 				//    for 2 seconds
-	m_drive->Drive(0.0, 0.0); 	// stop robot
+	m_drive->Drive(-0.5, 0.0); 	// Drive forwards half speed
+	Wait(2.0); 					// For 2 seconds
+	m_drive->Drive(0.0, 0.0); 	// Stop robot
+	
+	AxisCamera &camera = AxisCamera::GetInstance();	//To use the Axis camera uncomment this line
+	
+	while (IsAutonomous() && IsEnabled()) {
+		ColorImage *image;
+		//image = new RGBImage("/testImage.jpg");	// get the image from the cRIO flash
+		image = camera.GetImage();					// Get the image from the Camera
+
+		Vision::process(image); // The TargetReport returned by this function can change each time
+								// the process method is called, as the process method uses the same
+								// TargetReport variable each time (or something like that)
+	}
+	
 }
 
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
+	
 	while (IsOperatorControl())
 	{
 		m_drive->TankDrive(m_leftStick, m_rightStick); // drive with arcade style (use right stick)

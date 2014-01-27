@@ -3,23 +3,25 @@
 
 #include "WPILib.h"
 
-// SAFETY PIG HAS ARRIVED
-//  _._ _..._ .-',     _.._(`))
-// '-. `     '  /-._.-'    ',/
-//    )         \            '.
-//   / _    _    |             \
-//  |  a    a    /              |
-//  \   .-.                     ;  
-//   '-('' ).-'       ,'       ;
-//      '-;           |      .'
-//         \           \    /
-//         | 7  .__  _.-\   \
-//         | |  |  ``/  /`  /
-//        /,_|  |   /,_/   /
-//           /,_/      '`-'
-//
-// This shouldn't be taken out in the final code,
-// If this safety pig is removed, the program will blow up (true story)
+/*
+ SAFETY PIG HAS ARRIVED
+  _._ _..._ .-',     _.._(`))
+ '-. `     '  /-._.-'    ',/
+    )         \            '.
+   / _    _    |             \
+  |  a    a    /              |
+  \   .-.                     ;  
+   '-('' ).-'       ,'       ;
+      '-;           |      .'
+         \           \    /
+         | 7  .__  _.-\   \
+         | |  |  ``/  /`  /
+        /,_|  |   /,_/   /
+           /,_/      '`-'
+
+ This shouldn't be taken out in the final code,
+ If this safety pig is removed, the program will blow up (true story)
+*/
 
 class Collector {
 public:
@@ -30,6 +32,7 @@ public:
 	void SpinStop();
 	void PistonUp();
 	void PistonDown();
+	void PistonUpAndDown();
 private:
 	Victor *m_motor;
 	Solenoid *m_piston;

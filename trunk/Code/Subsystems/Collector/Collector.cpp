@@ -11,14 +11,12 @@
             I      I
         ----------------/
 
-(This roflcopter is staying, remove it and you will suffer the death sentence)
  */
 
 Collector::Collector(Victor *motor, Solenoid *piston, Compressor *compressor, DigitalInput *limitSwitch) {
 	m_motor = motor;
 	m_piston = piston;
 	m_compressor = compressor;
-	m_compressor->Start();
 	m_limitSwitch = limitSwitch;
 }
 
@@ -42,6 +40,11 @@ void Collector::PistonUp() {
 	m_piston->Set(true);
 }
 
-void Collector::PistonDown(void) {
+void Collector::PistonDown() {
 	m_piston->Set(false);
+}
+
+void Collector::PistonUpAndDown() {
+	PistonUp();
+	PistonDown();
 }
