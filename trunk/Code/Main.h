@@ -5,6 +5,7 @@
 #include "Subsystems/Vision/Vision.h"
 
 #include "Vision/RGBImage.h"
+#include "SmartDashboard/SmartDashboard.h"
 
 class MainRobot : public SimpleRobot
 {

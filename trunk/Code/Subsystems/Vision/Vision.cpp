@@ -21,6 +21,8 @@ TargetReport* Vision::process(ColorImage* image) {
 	//filteredImage->Write("Filtered.bmp");
 	
 	vector<ParticleAnalysisReport> *reports = filteredImage->GetOrderedParticleAnalysisReports();  //get a particle analysis report for each particle
+	target.distance = -1;
+	target.reports = reports->size();
 	
 	verticalTargetCount = horizontalTargetCount = 0;
 	//Iterate through each particle, scoring it and determining whether it is a target or not
@@ -126,7 +128,7 @@ TargetReport* Vision::process(ColorImage* image) {
 	return &target;
 }
 
-double Vision::computeDistance (BinaryImage *image, ParticleAnalysisReport *report) {
+double Vision::computeDistance(BinaryImage *image, ParticleAnalysisReport *report) {
 	double rectLong, height;
 	int targetHeight;
 	

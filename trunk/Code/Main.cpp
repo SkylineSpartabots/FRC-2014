@@ -42,16 +42,35 @@ void MainRobot::Autonomous()
 	Wait(2.0); 					// For 2 seconds
 	m_drive->Drive(0.0, 0.0); 	// Stop robot
 	
-	AxisCamera &camera = AxisCamera::GetInstance();	//To use the Axis camera uncomment this line
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");	//To use the Axis camera uncomment this line
 	
+	int autonomousLifetime = 0;
 	while (IsAutonomous() && IsEnabled()) {
 		ColorImage *image;
 		//image = new RGBImage("/testImage.jpg");	// get the image from the cRIO flash
 		image = camera.GetImage();					// Get the image from the Camera
-
-		Vision::process(image); // The TargetReport returned by this function can change each time
-								// the process method is called, as the process method uses the same
-								// TargetReport variable each time (or something like that)
+		
+		if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
+			continue;
+		}
+		
+		SmartDashboard::PutNumber("Autonomous Lifetime", ++autonomousLifetime);
+		SmartDashboard::PutNumber("Image Width", image->GetWidth());
+		SmartDashboard::PutNumber("Image Height", image->GetHeight());
+		
+		TargetReport* report = Vision::process(image);
+		SmartDashboard::PutBoolean("Target Hot", report->Hot);
+		SmartDashboard::PutNumber("Target Distance", report->distance);
+		SmartDashboard::PutNumber("Horizontal Index", report->horizontalIndex);
+		SmartDashboard::PutNumber("Vertical Index", report->verticalIndex);
+		SmartDashboard::PutNumber("Left Score", report->leftScore);
+		SmartDashboard::PutNumber("Right Score", report->rightScore);
+		SmartDashboard::PutNumber("Vertical Score", report->verticalScore);
+		SmartDashboard::PutNumber("Tape Width Score", report->tapeWidthScore);
+		SmartDashboard::PutNumber("Total Score", report->totalScore);
+		SmartDashboard::PutNumber("Particle Reports", report->reports);
+		
+		Wait(0.5);
 	}
 	
 }
