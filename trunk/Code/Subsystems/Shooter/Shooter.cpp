@@ -1,6 +1,6 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Victor *motorLeft1, Victor *motorLeft2, Victor *motorRight1, Victor *motorRight2, DigitalInput *limitSwitch){
+Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1, Talon *motorRight2, DigitalInput *limitSwitch){
 	m_motorLeft1 = motorLeft1;
 	m_motorLeft2 = motorLeft2;
 	m_motorRight1 = motorRight1;

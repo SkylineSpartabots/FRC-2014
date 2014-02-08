@@ -21,18 +21,18 @@ void MainRobot::InitializeHardware() {
 	m_compressor->Start();
 	m_solenoid = new Solenoid(Ports::Crio::SolenoidBreakout1);
 	
-	/*m_clawMotor = new Victor(Ports::DigitalSidecar::Pwm5);
+	//m_clawMotor = new Victor(Ports::DigitalSidecar::Pwm5);
 	
-	m_shooterLeft1 = new Victor(Ports::DigitalSidecar::Pwm6);
-	m_shooterLeft2 = new Victor(Ports::DigitalSidecar::Pwm7);
-	m_shooterRight1 = new Victor(Ports::DigitalSidecar::Pwm8);
-	m_shooterRight2 = new Victor(Ports::DigitalSidecar::Pwm9);
-	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio1);*/
+	m_shooterLeft1 = new Talon(Ports::DigitalSidecar::Pwm3);
+	m_shooterLeft2 = new Talon(Ports::DigitalSidecar::Pwm4);
+	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm5);
+	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm6);
+	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio2);
 }
 
 void MainRobot::InitializeSoftware() {
-	/*m_claw = new Claw(m_clawMotor);
-	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1, m_shooterRight2, m_shooterLimitSwitch);*/
+	//m_claw = new Claw(m_clawMotor);
+	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1, m_shooterRight2, m_shooterLimitSwitch);
 }
 
 void MainRobot::Autonomous()

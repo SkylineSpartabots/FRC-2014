@@ -17,16 +17,16 @@ private:
         Compressor *m_compressor;
         Solenoid *m_solenoid;
         
-        /*Victor *m_clawMotor;
+        //Victor *m_clawMotor;
         
-        Victor *m_shooterLeft1;
-        Victor *m_shooterLeft2;
-        Victor *m_shooterRight1;
-        Victor *m_shooterRight2;
+        Talon *m_shooterLeft1;
+        Talon *m_shooterLeft2;
+        Talon *m_shooterRight1;
+        Talon *m_shooterRight2;
         DigitalInput *m_shooterLimitSwitch;
         
-        Claw *m_claw;   
-        Shooter *m_shooter;*/
+        //Claw *m_claw;   
+        Shooter *m_shooter;
         
 public:
         MainRobot();

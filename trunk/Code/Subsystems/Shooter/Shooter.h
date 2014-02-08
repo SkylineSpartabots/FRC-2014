@@ -5,15 +5,15 @@
 
 class Shooter{
 	public:
-		Shooter(Victor *motorLeft1, Victor *motorLeft2, Victor *motorRight1, Victor *motorRight2, DigitalInput *limitSwitch);
+		Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1, Talon *motorRight2, DigitalInput *limitSwitch);
 		~Shooter();
 		void Shoot();
 		void Reset();
 	private:
-		Victor *m_motorLeft1;
-		Victor *m_motorLeft2;
-		Victor *m_motorRight1;
-		Victor *m_motorRight2;
+		Talon *m_motorLeft1;
+		Talon *m_motorLeft2;
+		Talon *m_motorRight1;
+		Talon *m_motorRight2;
 		DigitalInput *m_limitSwitch;
 };
 #endif
