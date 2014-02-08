@@ -58,8 +58,10 @@ void MainRobot::Autonomous()
 		
 		TargetReport* report = Vision::process(image);
 		SmartDashboard::PutBoolean("Target Hot", report->Hot);
-		SmartDashboard::PutNumber("Target Distance", report->distance/2.0);
+		SmartDashboard::PutNumber("Target Distance", report->distance/1.0);
 		SmartDashboard::PutNumber("Particle Reports", report->reports);
+		SmartDashboard::PutNumber("Left Score", report->leftScore);
+		SmartDashboard::PutNumber("Right Score", report->rightScore);
 		
 		Wait(0.5);
 	}

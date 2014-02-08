@@ -6,9 +6,10 @@ int verticalTargets[MAX_PARTICLES];
 int horizontalTargets[MAX_PARTICLES];
 int verticalTargetCount, horizontalTargetCount;
 Threshold threshold( //HSV threshold criteria, ranges are in that order ie. Hue is 60-100
-		105,  137,
-		230,  255,
-		133, 183);
+		100,  150,  // original values are 105 and 137  - max = 360
+		220,  255,  // original values are 230 and 255  - max = 255
+		50, 200);   // original values are 133 and 183  - max = 255
+// 52 - 71
 ParticleFilterCriteria2 criteria[] = { //Particle filter criteria, used to filter out small particles
 		{IMAQ_MT_AREA, AREA_MINIMUM, 65535, false, false}
 };
@@ -18,15 +19,15 @@ TargetReport* Vision::getReport() {
 }
 
 TargetReport* Vision::process(ColorImage* image) {
-	SmartDashboard::PutString("Trace", "TresholdHSV");
+	//SmartDashboard::PutString("Trace", "TresholdHSV");
 	BinaryImage *thresholdImage = image->ThresholdHSV(threshold);	// get just the green target pixels
 	//thresholdImage->Write("/threshold.bmp");
-	BinaryImage *filteredImage = thresholdImage;
-	//SmartDashboard::PutString("Trace", "Particle Filter");
-	//BinaryImage *filteredImage = thresholdImage->ParticleFilter(criteria, 1);	//Remove small particles
+	//BinaryImage *filteredImage = thresholdImage;
+	////SmartDashboard::PutString("Trace", "Particle Filter");
+	BinaryImage *filteredImage = thresholdImage->ParticleFilter(criteria, 1);	//Remove small particles
 	//filteredImage->Write("Filtered.bmp");
 	
-	SmartDashboard::PutString("Trace", "Get Ordered Particle Analysis Reports");
+	//SmartDashboard::PutString("Trace", "Get Ordered Particle Analysis Reports");
 	vector<ParticleAnalysisReport> *reports = filteredImage->GetOrderedParticleAnalysisReports();  //get a particle analysis report for each particle
 	target.distance = -1;
 	target.reports = reports->size();
@@ -37,7 +38,7 @@ TargetReport* Vision::process(ColorImage* image) {
 	{
 		scores = new Scores[reports->size()];
 		for (unsigned int i = 0; i < MAX_PARTICLES && i < reports->size(); i++) {
-			SmartDashboard::PutString("Trace", "Score particles");
+			//SmartDashboard::PutString("Trace", "Score particles");
 			ParticleAnalysisReport *report = &(reports->at(i));
 			
 			//Score each particle on rectangularity and aspect ratio
@@ -45,7 +46,7 @@ TargetReport* Vision::process(ColorImage* image) {
 			scores[i].aspectRatioVertical = Vision::scoreAspectRatio(filteredImage, report, true);
 			scores[i].aspectRatioHorizontal = Vision::scoreAspectRatio(filteredImage, report, false);			
 			
-			SmartDashboard::PutString("Trace", "Check particle if horiz or vert target");
+			//SmartDashboard::PutString("Trace", "Check particle if horiz or vert target");
 			//Check if the particle is a horizontal target, if not, check if it's a vertical target
 			if(Vision::scoreCompare(scores[i], false))
 			{
@@ -72,13 +73,13 @@ TargetReport* Vision::process(ColorImage* image) {
 			{
 				ParticleAnalysisReport *horizontalReport = &(reports->at(horizontalTargets[j]));
 				double horizWidth, horizHeight, vertWidth, leftScore, rightScore, tapeWidthScore, verticalScore, total;
-				SmartDashboard::PutString("Trace", "Horiz report imaqMeasureParticle");
+				//SmartDashboard::PutString("Trace", "Horiz report imaqMeasureParticle");
 				//Measure equivalent rectangle sides for use in score calculation
 				imaqMeasureParticle(filteredImage->GetImaqImage(), horizontalReport->particleIndex, 0, IMAQ_MT_EQUIVALENT_RECT_LONG_SIDE, &horizWidth);
 				imaqMeasureParticle(filteredImage->GetImaqImage(), verticalReport->particleIndex, 0, IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE, &vertWidth);
 				imaqMeasureParticle(filteredImage->GetImaqImage(), horizontalReport->particleIndex, 0, IMAQ_MT_EQUIVALENT_RECT_SHORT_SIDE, &horizHeight);
 				
-				SmartDashboard::PutString("Trace", "Horiz report ratioToScore");
+				//SmartDashboard::PutString("Trace", "Horiz report ratioToScore");
 				//Determine if the horizontal target is in the expected location to the left of the vertical target
 				leftScore = Vision::ratioToScore(1.2*(verticalReport->boundingRect.left - horizontalReport->center_mass_x)/horizWidth);
 				//Determine if the horizontal target is in the expected location to the right of the  vertical target
@@ -102,14 +103,14 @@ TargetReport* Vision::process(ColorImage* image) {
 					target.verticalScore = verticalScore;
 				}
 			}
-			SmartDashboard::PutString("Trace", "Check hot");
+			//SmartDashboard::PutString("Trace", "Check hot");
 			//Determine if the best target is a Hot target
 			target.Hot = Vision::hotOrNot(target);
 		}
 		
 		if(verticalTargetCount > 0)
 		{
-			SmartDashboard::PutString("Trace", "Check distance");
+			//SmartDashboard::PutString("Trace", "Check distance");
 			//Information about the target is contained in the "target" structure
 			//To get measurement information such as sizes or locations use the
 			//horizontal or vertical index to get the particle report as shown below
