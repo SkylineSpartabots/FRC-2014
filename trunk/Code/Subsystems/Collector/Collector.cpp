@@ -13,9 +13,12 @@
 
  */
 
-Collector::Collector(Victor *motor, Solenoid *piston, Compressor *compressor, DigitalInput *limitSwitch) {
+Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor, DigitalInput *limitSwitch) {
 	m_motor = motor;
-	m_piston = piston;
+	m_piston1 = piston1;
+	m_piston2 = piston2;
+	m_piston3 = piston3;
+	m_piston4 = piston4;
 	m_compressor = compressor;
 	m_limitSwitch = limitSwitch;
 }
@@ -36,15 +39,30 @@ void Collector::SpinStop() {
 	m_motor->Set(0.0);
 }
 
-void Collector::PistonUp() {
-	m_piston->Set(true);
+void Collector::PistonPush() {
+	m_piston1->Set(false);
+	m_piston2->Set(true);
+	m_piston3->Set(true);
+	m_piston4->Set(false);
 }
 
-void Collector::PistonDown() {
-	m_piston->Set(false);
+void Collector::PistonPull() {
+	m_piston1->Set(true);
+	m_piston2->Set(false);
+	m_piston3->Set(false);
+	m_piston4->Set(true);
 }
 
-void Collector::PistonUpAndDown() {
-	PistonUp();
-	PistonDown();
+void Collector::PistonNeutral(){
+	m_piston1->Set(true);
+	m_piston2->Set(false);
+	m_piston3->Set(true);
+	m_piston4->Set(false);
+}
+
+void Collector::PistonSlightPush(){
+	m_piston1->Set(false);
+	m_piston2->Set(true);
+	m_piston3->Set(false);
+	m_piston4->Set(true);
 }

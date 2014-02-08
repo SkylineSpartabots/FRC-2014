@@ -25,17 +25,21 @@
 
 class Collector {
 public:
-	Collector(Victor *motor, Solenoid *piston, Compressor *compressor, DigitalInput *limitSwitch);
+	Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor, DigitalInput *limitSwitch);
 	bool GetLimitSwitch();
 	void SpinInwards();
 	void SpinOutwards();
 	void SpinStop();
-	void PistonUp();
-	void PistonDown();
-	void PistonUpAndDown();
+	void PistonPush();
+	void PistonPull();
+	void PistonNeutral();
+	void PistonSlightPush();
 private:
 	Victor *m_motor;
-	Solenoid *m_piston;
+	Solenoid *m_piston1;
+	Solenoid *m_piston2;
+	Solenoid *m_piston3;
+	Solenoid *m_piston4;
 	Compressor *m_compressor;
 	DigitalInput *m_limitSwitch;
 };
