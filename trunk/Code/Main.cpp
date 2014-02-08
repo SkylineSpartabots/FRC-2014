@@ -55,19 +55,10 @@ void MainRobot::Autonomous()
 		}
 		
 		SmartDashboard::PutNumber("Autonomous Lifetime", ++autonomousLifetime);
-		SmartDashboard::PutNumber("Image Width", image->GetWidth());
-		SmartDashboard::PutNumber("Image Height", image->GetHeight());
 		
 		TargetReport* report = Vision::process(image);
 		SmartDashboard::PutBoolean("Target Hot", report->Hot);
-		SmartDashboard::PutNumber("Target Distance", report->distance);
-		SmartDashboard::PutNumber("Horizontal Index", report->horizontalIndex);
-		SmartDashboard::PutNumber("Vertical Index", report->verticalIndex);
-		SmartDashboard::PutNumber("Left Score", report->leftScore);
-		SmartDashboard::PutNumber("Right Score", report->rightScore);
-		SmartDashboard::PutNumber("Vertical Score", report->verticalScore);
-		SmartDashboard::PutNumber("Tape Width Score", report->tapeWidthScore);
-		SmartDashboard::PutNumber("Total Score", report->totalScore);
+		SmartDashboard::PutNumber("Target Distance", report->distance/2.0);
 		SmartDashboard::PutNumber("Particle Reports", report->reports);
 		
 		Wait(0.5);
