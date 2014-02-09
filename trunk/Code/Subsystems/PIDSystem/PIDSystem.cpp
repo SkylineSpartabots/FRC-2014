@@ -1,17 +1,17 @@
 #include "PIDSystem.h"
 
-PIDSystem::PIDSystem(Encoder *encoder, Victor *motor1, Victor *motor2, Command *m_command) : PIDSubsystem("motor", 1.0, 1.0, 0.0, 1.0){
-	GetPIDController()->SetContinuous(false);
+PIDSystem::PIDSystem(Encoder *encoder, RobotDrive *robotDrive) : PIDSubsystem("motor", 1.0, 1.0, 0.0, 1.0){
 	m_encoder = encoder;
-	m_motor1 = motor1;
-	m_motor2 = motor2;
+	m_robotDrive = robotDrive;
 	*m_speed = 0.0;
-	SetSetpoint(*m_speed);
+	
+	GetPIDController()->SetContinuous(false);
+	GetPIDController()->SetOutputRange(-1.0, 1.0);
 	Enable();
 }
 
 void PIDSystem::InitDefaultCommand(){
-	SetDefaultCommand(m_command);
+	//empty
 }
 
 double PIDSystem::ReturnPIDInput(){
@@ -22,7 +22,15 @@ void PIDSystem::setSpeed(float speed){
 	*m_speed = speed;
 }
 
-void PIDSystem::UsePIDOutput(){
-	m_motor1->Set(*m_speed);
-	m_motor2->Set(*m_speed);
+void PIDSystem::SetSetPoint(float setPoint){
+	SetSetpoint(setPoint);
 }
+
+void PIDSystem::UsePIDOutput(){
+	m_robotDrive->Drive(*m_speed, 0.0);
+}
+
+void PIDSystem::setDistancePerPulse(float distancePerPoint){
+	m_encoder->SetDistancePerPulse(1.0f / distancePerPoint);
+}
+

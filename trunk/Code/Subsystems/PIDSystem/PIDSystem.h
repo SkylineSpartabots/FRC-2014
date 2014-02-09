@@ -6,15 +6,16 @@
 
 class PIDSystem : public PIDSubsystem{
 	public:
-		PIDSystem(Encoder *encoder, Victor *motor1, Victor *motor2, Command *m_command);
+		PIDSystem(Encoder *encoder, RobotDrive *robotDrive);
 		void InitDefaultCommand();
 		double ReturnPIDInput(); 
 		void UsePIDOutput();
 		void setSpeed(float speed);
+		void SetSetPoint(float setPoint);
+		void setDistancePerPulse(float distancePerPoint);
 	private:
 		Encoder *m_encoder;
-		Victor *m_motor1, *m_motor2;
-		Command *m_command;
+		RobotDrive *m_robotDrive;
 		double *m_speed;
 };
 
