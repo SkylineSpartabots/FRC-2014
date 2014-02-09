@@ -21,7 +21,7 @@ void XboxTankDriveProfile::OperatorControl(void){
 		
 		if (xbox->GetLeftBumperButton()) {
 			m_collector->PistonPull();
-		} else if (xbox->GetLeftBumperButton()) {
+		} else if (xbox->GetRightBumperButton()) {
 			m_collector->PistonPush();
 		}
 		/*
