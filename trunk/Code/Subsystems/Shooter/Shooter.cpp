@@ -1,6 +1,8 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1, Talon *motorRight2, DigitalInput *limitSwitchBotoom, DigitalInput *limitSwitchTop){
+Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
+		Talon *motorRight2, DigitalInput *limitSwitchBottom, DigitalInput *limitSwitchTop, Collector *collector){
+	m_collector = collector;
 	m_motorLeft1 = motorLeft1;
 	m_motorLeft2 = motorLeft2;
 	m_motorRight1 = motorRight1;
@@ -38,4 +40,19 @@ void Shooter::Reset () {
 		m_motorRight1->Set(0);
 		m_motorRight2->Set(0);
 	}
+}
+void Shooter::shootWithArm(){
+	double upDownArmTime = 2.0;
+	double shootTime = 2.0;
+	
+	m_collector->PistonPush(); 
+	Wait(upDownArmTime);
+	m_collector->PistonNeutral(); 
+	Wait(0.1);
+	Shoot(); 
+	Wait(shootTime);
+	Reset(); 
+	Wait(shootTime); 
+	m_collector->PistonPull();
+	Wait(upDownArmTime);
 }

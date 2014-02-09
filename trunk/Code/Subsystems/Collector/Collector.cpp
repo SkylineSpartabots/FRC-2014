@@ -10,10 +10,12 @@
          \______________]
             I      I
         ----------------/
-
+        
+Plz don't remove Mister Roflcoptor, kthx
  */
 
-Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor, /*DigitalInput *limitSwitch*/) {
+Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2,
+		Solenoid *piston3, Solenoid *piston4, Compressor *compressor/*, DigitalInput *limitSwitch*/) {
 	m_motor = motor;
 	m_piston1 = piston1;
 	m_piston2 = piston2;
