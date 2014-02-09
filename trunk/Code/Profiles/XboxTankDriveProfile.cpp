@@ -19,10 +19,16 @@ void XboxTankDriveProfile::OperatorControl(void){
 		float rightY = Cutoff(xbox->GetAxis(xbox->RightY));
 		m_drive->TankDrive(leftY, rightY);
 		
+		if (xbox->GetLeftBumperButton()) {
+			m_collector->PistonPull();
+		} else if (xbox->GetLeftBumperButton()) {
+			m_collector->PistonPush();
+		}
+		/*
 		float bumper = Cutoff(xbox->GetAxis(xbox->Bumper)); 
 		if(bumper >= 0.4){
 			m_shooter->shootWithArm();  
-		}
+		}*/
 		
 		Wait(0.005); // wait for a motor update time
 	}
