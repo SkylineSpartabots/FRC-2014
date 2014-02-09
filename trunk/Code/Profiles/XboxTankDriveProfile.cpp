@@ -24,6 +24,12 @@ void XboxTankDriveProfile::OperatorControl(void){
 		} else if (xbox->GetRightBumperButton()) {
 			m_collector->PistonPush();
 		}
+		if(xbox->GetAButton()){
+			m_collector->SpinInwards();
+		}
+		if(xbox->GetBButton()){
+			m_collector->SpinOutwards();
+		}
 		/*
 		float bumper = Cutoff(xbox->GetAxis(xbox->Bumper)); 
 		if(bumper >= 0.4){
@@ -59,6 +65,7 @@ void XboxTankDriveProfile::InitializeHardware() {
 	
 	//m_clawMotor = new Victor(Ports::DigitalSidecar::Pwm5);
 	
+	m_collectorMotor = new Victor(Ports::DigitalSidecar::Pwm1);
 	m_shooterLeft1 = new Talon(Ports::DigitalSidecar::Pwm3);
 	m_shooterLeft2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm5);
