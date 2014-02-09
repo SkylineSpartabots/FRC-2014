@@ -30,6 +30,9 @@ void XboxTankDriveProfile::OperatorControl(void){
 		if(xbox->GetBButton()){
 			m_collector->SpinOutwards();
 		}
+		if(xbox->GetYButton()){
+			m_collector->SpinStop();
+		}
 		/*
 		float bumper = Cutoff(xbox->GetAxis(xbox->Bumper)); 
 		if(bumper >= 0.4){
