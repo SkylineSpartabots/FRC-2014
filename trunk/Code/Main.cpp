@@ -36,20 +36,19 @@ void MainRobot::InitializeSoftware() {
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1, m_shooterRight2, m_shooterLimitSwitch);
 }
 
+bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
 	m_drive->SetSafetyEnabled(false);
-	m_drive->Drive(-0.5, 0.0); 	// Drive forwards half speed
-	Wait(2.0); 					// For 2 seconds
-	m_drive->Drive(0.0, 0.0); 	// Stop robot
+	m_drive->Drive(-0.5, 0.0);
+	Wait(2.5);
+	m_drive->Drive(0.0, 0.0);
 	
-	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");	//To use the Axis camera uncomment this line
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	int autonomousLifetime = 0;
 	while (IsAutonomous() && IsEnabled()) {
-		ColorImage *image;
-		//image = new RGBImage("/testImage.jpg");	// get the image from the cRIO flash
-		image = camera.GetImage();					// Get the image from the Camera
+		ColorImage *image = camera.GetImage();					// Get the image from the Camera
 		
 		if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
 			continue;
@@ -64,6 +63,10 @@ void MainRobot::Autonomous()
 		SmartDashboard::PutNumber("Left Score", report->leftScore);
 		SmartDashboard::PutNumber("Right Score", report->rightScore);
 		
+		if (!autonomousDidShoot && report->Hot) {
+			m_shooter->Shoot();
+		}
+		
 		Wait(0.5);
 	}
 	
@@ -75,7 +78,7 @@ void MainRobot::OperatorControl()
 	
 	while (IsOperatorControl())
 	{
-		m_drive->TankDrive(m_leftStick, m_rightStick); // drive with arcade style (use right stick)
+		m_drive->TankDrive(m_leftStick, m_rightStick);
 		
 		if (m_rightStick->GetRawButton(5)) {
 			m_solenoid->Set(true);
@@ -90,7 +93,7 @@ void MainRobot::OperatorControl()
 			m_claw->Stop();
 		}*/
 		
-		Wait(0.005);				// wait for a motor update time
+		Wait(0.005); // wait for a motor update time
 	}
 }
 

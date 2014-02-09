@@ -50,12 +50,9 @@ struct TargetReport {
  
 /**
  * From the 2014 Vision Sample.
- * Theoretically speaking, this should work
  * 
- * Sample program to use NIVision to find rectangles in the scene that are illuminated
- * by a LED ring light (similar to the model from FIRSTChoice). The camera sensitivity
- * is set very low so as to only show light sources and remove any distracting parts
- * of the image.
+ * Program using NIVision to find rectangles in the scene that are illuminated
+ * by a green LED ring light.
  * 
  * The CriteriaCollection is the set of criteria that is used to filter the set of
  * rectangles that are detected. In this example we're looking for rectangles with
@@ -66,6 +63,24 @@ struct TargetReport {
  * removes small particles that might be caused by green reflection scattered from other 
  * parts of the scene. Finally all particles are scored on rectangularity, and aspect ratio,
  * to determine if they are a target.
+ * 
+ * The camera settings for optimal results are:
+ * 
+ * M1013
+ * - Color Level: 50
+ * - Brightness: 0
+ * - Sharpness: 50
+ * - Contrast: 50
+ * 
+ * - White balance: Fixed Indoor
+ * - Exposure value: 0
+ * - Enable Backlight compensation (unchecked)
+ * - Exposure Priority: Motion
+ * 
+ * 206/M1011
+ * - White balance: Automatic
+ * - Exposure control: Automatic
+ * - Exposure priority: None
  */
 class Vision {
 	
@@ -82,7 +97,7 @@ public:
 	 * @param report The Particle Analysis Report for the particle
 	 * @return The estimated distance to the target in feet.
 	 */
-	static double computeDistance (BinaryImage *image, ParticleAnalysisReport *report);
+	static double computeDistance(BinaryImage *image, ParticleAnalysisReport *report);
 
 	/**
 	 * Computes a score (0-100) comparing the aspect ratio to the ideal aspect ratio for the target. This method uses
