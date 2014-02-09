@@ -13,19 +13,21 @@
 
  */
 
-Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor, DigitalInput *limitSwitch) {
+Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor, /*DigitalInput *limitSwitch*/) {
 	m_motor = motor;
 	m_piston1 = piston1;
 	m_piston2 = piston2;
 	m_piston3 = piston3;
 	m_piston4 = piston4;
 	m_compressor = compressor;
-	m_limitSwitch = limitSwitch;
+	//m_limitSwitch = limitSwitch;
 }
 
+/*
 bool Collector::GetLimitSwitch() {
 	return m_limitSwitch->Get();
 }
+*/
 
 void Collector::SpinInwards() {
 	m_motor->Set(1.0);

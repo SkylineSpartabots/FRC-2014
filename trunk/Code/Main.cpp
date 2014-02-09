@@ -27,7 +27,8 @@ void MainRobot::InitializeHardware() {
 	m_shooterLeft2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm5);
 	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm6);
-	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio2);
+	m_limitSwitchBottom = new DigitalInput(Ports::DigitalSidecar::Gpio2);
+	m_limitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
 }
 
 void MainRobot::InitializeSoftware() {
