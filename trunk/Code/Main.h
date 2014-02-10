@@ -1,18 +1,19 @@
-#ifndef BASE_ROBOT_PROFILE_H
-#define BASE_ROBOT_PROFILE_H
+#ifndef MAIN_H
+#define MAIN_H
 
 #include "WPILib.h"
 
-#include "../Ports.h"
-#include "../Subsystems/Claw/Claw.h"
-#include "../Subsystems/Shooter/Shooter.h"
-#include "../Subsystems/Vision/Vision.h"
+#include "Ports.h"
+#include "Subsystems/Claw/Claw.h"
+#include "Subsystems/Shooter/Shooter.h"
+#include "Subsystems/Vision/Vision.h"
+#include "Subsystems/Controllers/XboxController.h"
 
 #include "Vision/RGBImage.h"
 #include "SmartDashboard/SmartDashboard.h"
 
-class BaseRobotProfile : public SimpleRobot {
-public:
+class MainRobot : public SimpleRobot {
+	XboxController *xbox;
 	RobotDrive *m_drive;
 	Joystick *m_rightStick;
 	Joystick *m_leftStick;
@@ -37,12 +38,14 @@ public:
 	Collector *m_collector;
 	Shooter *m_shooter;
 	
-	BaseRobotProfile();
-	virtual void InitializeHardware();
-	virtual void InitializeSoftware();
-	virtual void Autonomous();
-	virtual void OperatorControl();
-	virtual void Test();
+public:
+	MainRobot();
+	void InitializeHardware();
+	void InitializeSoftware();
+	void Autonomous();
+	void OperatorControl();
+	void Test();
+	float Cutoff(float num);
 };
 
 #endif
