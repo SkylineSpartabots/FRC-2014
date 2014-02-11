@@ -1,22 +1,21 @@
-#ifndef MAIN_H
-#define MAIN_H
-
 #include "WPILib.h"
-
 #include "Ports.h"
 #include "Subsystems/Claw/Claw.h"
 #include "Subsystems/Shooter/Shooter.h"
 #include "Subsystems/Vision/Vision.h"
+#include "Subsystems/Collector/Collector.h"
 #include "Subsystems/Controllers/XboxController.h"
 
 #include "Vision/RGBImage.h"
 #include "SmartDashboard/SmartDashboard.h"
 
-class MainRobot : public SimpleRobot {
-	XboxController *xbox;
+class MainRobot : public SimpleRobot
+{
+private:
 	RobotDrive *m_drive;
 	Joystick *m_rightStick;
 	Joystick *m_leftStick;
+	XboxController *xbox;
 	
 	Victor *m_collectorMotor;
 	Compressor *m_compressor;
@@ -40,6 +39,7 @@ class MainRobot : public SimpleRobot {
 	
 public:
 	MainRobot();
+	void RobotInit();
 	void InitializeHardware();
 	void InitializeSoftware();
 	void Autonomous();
@@ -47,5 +47,3 @@ public:
 	void Test();
 	float Cutoff(float num);
 };
-
-#endif
