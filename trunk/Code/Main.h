@@ -5,6 +5,7 @@
 #include "Subsystems/Vision/Vision.h"
 #include "Subsystems/Collector/Collector.h"
 #include "Subsystems/Controllers/XboxController.h"
+#include "Subsystems/Collector/Collector.h"
 
 #include "Vision/RGBImage.h"
 #include "SmartDashboard/SmartDashboard.h"

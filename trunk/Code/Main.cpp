@@ -59,11 +59,6 @@ void MainRobot::InitializeSoftware()
 //bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
-
-	m_compressor = new Compressor(Ports::DigitalSidecar::Gpio1,
-								  Ports::DigitalSidecar::Relay1);
-	m_compressor->Start();
-	
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
 	Wait(2.5);
@@ -115,6 +110,8 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (xbox->GetRightBumperButton()) {
 				m_collector->PistonPush();
+				Wait(0.5);
+				m_collector->PistonNeutral();
 			}
 			if(xbox->GetAButton()){
 				m_collector->SpinInwards();
