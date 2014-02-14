@@ -16,10 +16,10 @@ Shooter::~Shooter (){
 	//empty
 }
 void Shooter::Shoot (){
-	m_motorLeft1->Set(1.0);
-	m_motorLeft2->Set(1.0);
-	m_motorRight1->Set(1.0);
-	m_motorRight2->Set(1.0);
+	m_motorLeft1->Set(0.2);
+	m_motorLeft2->Set(0.2);
+	m_motorRight1->Set(0.2);
+	m_motorRight2->Set(0.2);
 	
 	if(m_limitSwitchTop->Get()){
 		m_motorLeft1->Set(0);
@@ -29,10 +29,10 @@ void Shooter::Shoot (){
 	}
 }
 void Shooter::Reset () {
-	m_motorLeft1->Set(-1.0);
-	m_motorLeft2->Set(-1.0);
-	m_motorRight1->Set(-1.0);
-	m_motorRight2->Set(-1.0);
+	m_motorLeft1->Set(-0.2);
+	m_motorLeft2->Set(-0.2);
+	m_motorRight1->Set(-0.2);
+	m_motorRight2->Set(-0.2);
 	
 	if (m_limitSwitchBottom->Get()){	
 		m_motorLeft1->Set(0);
@@ -42,8 +42,8 @@ void Shooter::Reset () {
 	}
 }
 void Shooter::shootWithArm(){
-	double upDownArmTime = 2.0;
-	double shootTime = 2.0;
+	double upDownArmTime = 0.25;
+	double shootTime = 0.25;
 	
 	m_collector->PistonPush(); 
 	Wait(upDownArmTime);
