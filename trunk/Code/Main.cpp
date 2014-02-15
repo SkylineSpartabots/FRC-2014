@@ -150,11 +150,12 @@ void MainRobot::OperatorControl()
 			}
 			
 			// SHOOTING
-			
-			if (shootController->GetAButton()) {
-				m_shooter->Shoot();
-			} else if (shootController->GetBButton()) {
-				m_shooter->Stop();
+			if (shootController->GetRawButton(shootController->A)) {
+				m_shooter->Set(-.1);
+			} else if (shootController->GetRawButton(shootController->B)) {
+				m_shooter->Set(.2);
+			} else {
+				m_shooter->Set(0);
 			}
 			
 			float bumper = shootController->GetAxis(shootController->Bumper); 

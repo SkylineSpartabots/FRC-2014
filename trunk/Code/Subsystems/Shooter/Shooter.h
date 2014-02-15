@@ -10,6 +10,7 @@ class Shooter {
 				Talon *motorRight2, DigitalInput *limitSwitchBottom, DigitalInput *limitSwitchTop, Collector *collector);
 		~Shooter();
 		void Shoot();
+		void Set(double power);
 		void Stop();
 		void Reset();
 		void shootWithArm(); 
