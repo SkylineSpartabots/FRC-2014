@@ -3,8 +3,9 @@
 #define CONTROLLER XBOX
 
 #define XBOX 1
-#define JOYSTICKS 2
+#define JOYSTICKS 2 // Joystick controlling not implemented
 
+// Constructor: Called before RobotInit(); WPILIB is not guaranteed to be fully working here
 MainRobot::MainRobot()
 {
 	InitializeHardware();
@@ -13,6 +14,13 @@ MainRobot::MainRobot()
 	m_drive->SetExpiration(0.1);
 }
 
+// RobotInit: Called after WPILIB are guaranteed to be initialized
+void MainRobot::RobotInit()
+{
+	
+}
+
+// InitializeHardware: Objects for interacting with hardware are initialized here
 void MainRobot::InitializeHardware()
 {
 	m_drive = new RobotDrive(Ports::DigitalSidecar::Pwm8, 
@@ -21,7 +29,8 @@ void MainRobot::InitializeHardware()
 							 Ports::DigitalSidecar::Pwm9);
 	
 	if (CONTROLLER == XBOX) {
-		xbox = new XboxController(1);
+		driveController = new XboxController(Ports::Computer::Usb1);
+		shootController = new XboxController(Ports::Computer::Usb2);
 	} else if (CONTROLLER == JOYSTICKS) {
 		m_leftStick = new Joystick(Ports::Computer::Usb1);
 		m_rightStick = new Joystick(Ports::Computer::Usb2);
@@ -47,6 +56,7 @@ void MainRobot::InitializeHardware()
 	m_shooterLimitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
 }
 
+// InitializeSoftware: Initialize subsystems
 void MainRobot::InitializeSoftware()
 {
 	//m_claw = new Claw(m_clawMotor);
@@ -58,13 +68,17 @@ void MainRobot::InitializeSoftware()
 bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
+	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
 	Wait(2.5);
-	m_drive->Drive(0.0, 0.0);
+	m_drive->Drive(0.0, 0.0); // Stop driving
 	
 	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
+	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
+	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
+	// to shoot again
 	int autonomousLifetime = 0;
 	while (IsAutonomous() && IsEnabled()) {
 		ColorImage *image = camera.GetImage();					// Get the image from the Camera
@@ -90,63 +104,78 @@ void MainRobot::Autonomous()
 	}
 }
 
-bool reverseDrive = false;
+bool isShooting = false;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
 	
 	int operatorControlLifetime = 0;
 	while (IsOperatorControl()) {
-		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);
+		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
 		
 		if (CONTROLLER == XBOX) {
-			float leftY = -Cutoff(xbox->GetAxis(xbox->LeftY));
-			float rightY = -Cutoff(xbox->GetAxis(xbox->RightY));
+			// DRIVING
 			
-			if (reverseDrive) {
+			// (for the two code lines below) The minus in front makes the robot drive in the
+			// direction of the collector (when joysticks are forward)
+			float leftY = -Cutoff(driveController->GetAxis(driveController->LeftY));
+			float rightY = -Cutoff(driveController->GetAxis(driveController->RightY));
+			
+			// Drive reversal when left trigger down (go opposite direction)
+			if (driveController->GetAxis(driveController->Bumper) >= 0.4) {
 				leftY = -leftY;
 				rightY = -rightY;
 			}
+			
+			SmartDashboard::PutNumber("Triggers", driveController->GetAxis(driveController->Bumper));
+			
 			m_drive->TankDrive(leftY, rightY);
 			
-			if (xbox->GetLeftBumperButton()) {
+			// PISTON BUTTONS (FOR COLLECTOR)
+			if (driveController->GetLeftBumperButton()) {
 				m_collector->PistonPull();
-			} else if (xbox->GetRightBumperButton()) {
+			} else if (driveController->GetRightBumperButton()) {
 				m_collector->PistonPush();
 				Wait(0.5);
 				m_collector->PistonNeutral();
 			}
-			if (xbox->GetAButton()){
+			
+			// SPIN BUTTONS (FOR COLLECTOR)
+			if (driveController->GetAButton()){
 				m_collector->SpinInwards();
-			}
-			if (xbox->GetBButton()){
+			} else if (driveController->GetBButton()){
 				m_collector->SpinOutwards();
-			}
-			if (xbox->GetYButton()){
+			} else if (driveController->GetYButton()){
 				m_collector->SpinStop();
 			}
-			if (xbox->GetXButton()) {
-				reverseDrive = !reverseDrive;
+			
+			// SHOOTING
+			
+			if (shootController->GetAButton()) {
+				m_shooter->Shoot();
+			} else if (shootController->GetBButton()) {
+				m_shooter->Stop();
 			}
 			
-			float bumper = xbox->GetAxis(xbox->Bumper); 
-			if(bumper >= 0.4){
-				m_shooter->shootWithArm();  
+			float bumper = shootController->GetAxis(shootController->Bumper); 
+			if (bumper >= 0.4){
+				if (!isShooting) {
+					m_shooter->shootWithArm();  // This is a blocking function, it will stop the main loop
+												// until it finishes executing. We'll need a separate thread
+												// if we want it to not temporarily stop the main loop
+					isShooting = true;
+				}
+			} else {
+				isShooting = false;
 			}
 			
-		} else if (CONTROLLER == JOYSTICKS) {
+		} else if (CONTROLLER == JOYSTICKS) { // Xbox is a higher priority, do this later
 			m_drive->TankDrive(m_leftStick, m_rightStick);
 			
-			// Xbox is a higher priority, do this later
 		}
 		
 		Wait(0.005); // wait for a motor update time
 	}
-}
-
-void MainRobot::RobotInit()
-{
-	
 }
 
 void MainRobot::Test()

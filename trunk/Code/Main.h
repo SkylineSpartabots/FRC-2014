@@ -16,7 +16,8 @@ private:
 	RobotDrive *m_drive;
 	Joystick *m_rightStick;
 	Joystick *m_leftStick;
-	XboxController *xbox;
+	XboxController *driveController;
+	XboxController *shootController;
 	
 	Victor *m_collectorMotor;
 	Compressor *m_compressor;
