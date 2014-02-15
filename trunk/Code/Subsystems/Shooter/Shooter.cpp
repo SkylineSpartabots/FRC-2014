@@ -1,5 +1,7 @@
 #include "Shooter.h"
 
+bool shoot_power = 0.2;
+
 Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
 		Talon *motorRight2, DigitalInput *limitSwitchBottom, DigitalInput *limitSwitchTop, Collector *collector){
 	m_collector = collector;
@@ -16,10 +18,10 @@ Shooter::~Shooter (){
 	//empty
 }
 void Shooter::Shoot (){
-	m_motorLeft1->Set(0.2);
-	m_motorLeft2->Set(0.2);
-	m_motorRight1->Set(0.2);
-	m_motorRight2->Set(0.2);
+	m_motorLeft1->Set(shoot_power);
+	m_motorLeft2->Set(shoot_power);
+	m_motorRight1->Set(shoot_power);
+	m_motorRight2->Set(shoot_power);
 	
 	if(m_limitSwitchTop->Get()){
 		m_motorLeft1->Set(0);
@@ -29,10 +31,10 @@ void Shooter::Shoot (){
 	}
 }
 void Shooter::Reset () {
-	m_motorLeft1->Set(-0.2);
-	m_motorLeft2->Set(-0.2);
-	m_motorRight1->Set(-0.2);
-	m_motorRight2->Set(-0.2);
+	m_motorLeft1->Set(-shoot_power);
+	m_motorLeft2->Set(-shoot_power);
+	m_motorRight1->Set(-shoot_power);
+	m_motorRight2->Set(-shoot_power);
 	
 	if (m_limitSwitchBottom->Get()){	
 		m_motorLeft1->Set(0);

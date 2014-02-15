@@ -39,10 +39,10 @@ void MainRobot::InitializeHardware()
 	//m_clawMotor = new Victor(Ports::DigitalSidecar::Pwm5);
 	
 	m_collectorMotor = new Victor(Ports::DigitalSidecar::Pwm1);
-	m_shooterLeft1 = new Talon(Ports::DigitalSidecar::Pwm3);
+	m_shooterLeft1 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterLeft2 = new Talon(Ports::DigitalSidecar::Pwm4);
-	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm5);
-	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm6);
+	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm4);
+	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterLimitSwitchBottom = new DigitalInput(Ports::DigitalSidecar::Gpio2);
 	m_shooterLimitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
 }
@@ -55,8 +55,7 @@ void MainRobot::InitializeSoftware()
 			m_shooterRight2, m_shooterLimitSwitchBottom, m_shooterLimitSwitchTop, m_collector);
 }
 
-
-//bool autonomousDidShoot = false;
+bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
 	m_drive->SetSafetyEnabled(false);
@@ -82,28 +81,32 @@ void MainRobot::Autonomous()
 		SmartDashboard::PutNumber("Particle Reports", report->reports);
 		SmartDashboard::PutNumber("Left Score", report->leftScore);
 		SmartDashboard::PutNumber("Right Score", report->rightScore);
-		/*
+		
 		if (!autonomousDidShoot && report->Hot) {
 			m_shooter->Shoot();
-		}*/
+		}
 		
 		Wait(0.5);
 	}
 }
 
-
+bool reverseDrive = false;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
-
+	
 	int operatorControlLifetime = 0;
 	while (IsOperatorControl()) {
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);
 		
 		if (CONTROLLER == XBOX) {
-			float leftY = Cutoff(xbox->GetAxis(xbox->LeftY));
-			float rightY = Cutoff(xbox->GetAxis(xbox->RightY));
-			rightY = ((-0.1 <= rightY) && (rightY <= 0.1)) ? 0 : rightY;
+			float leftY = -Cutoff(xbox->GetAxis(xbox->LeftY));
+			float rightY = -Cutoff(xbox->GetAxis(xbox->RightY));
+			
+			if (reverseDrive) {
+				leftY = -leftY;
+				rightY = -rightY;
+			}
 			m_drive->TankDrive(leftY, rightY);
 			
 			if (xbox->GetLeftBumperButton()) {
@@ -113,18 +116,20 @@ void MainRobot::OperatorControl()
 				Wait(0.5);
 				m_collector->PistonNeutral();
 			}
-			if(xbox->GetAButton()){
+			if (xbox->GetAButton()){
 				m_collector->SpinInwards();
 			}
-			if(xbox->GetBButton()){
+			if (xbox->GetBButton()){
 				m_collector->SpinOutwards();
 			}
-			if(xbox->GetYButton()){
+			if (xbox->GetYButton()){
 				m_collector->SpinStop();
+			}
+			if (xbox->GetXButton()) {
+				reverseDrive = !reverseDrive;
 			}
 			
 			float bumper = xbox->GetAxis(xbox->Bumper); 
-			leftY = ((-0.1 <= leftY) && (leftY <= 0.1)) ? 0 : leftY;
 			if(bumper >= 0.4){
 				m_shooter->shootWithArm();  
 			}
@@ -141,7 +146,7 @@ void MainRobot::OperatorControl()
 
 void MainRobot::RobotInit()
 {
-	SmartDashboard::PutBoolean("RobotInit", true);
+	
 }
 
 void MainRobot::Test()
