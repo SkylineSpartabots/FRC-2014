@@ -136,7 +136,7 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (driveController->GetRightBumperButton()) {
 				m_collector->PistonPush();
-				Wait(0.5);
+				Wait(2.0);
 				m_collector->PistonNeutral();
 			}
 			
