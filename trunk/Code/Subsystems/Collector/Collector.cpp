@@ -70,3 +70,10 @@ void Collector::PistonSlightPush(){
 	m_piston3->Set(false);
 	m_piston4->Set(true);
 }
+
+bool Collector::isExtended(){
+	if (m_piston1->Get() == true && m_piston2->Get() == false && m_piston3->Get() == false && m_piston4->Get() == true){
+		return true;
+	}
+	else return false;
+}

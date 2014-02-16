@@ -34,6 +34,7 @@ public:
 	void PistonPull();
 	void PistonNeutral();
 	void PistonSlightPush();
+	bool isExtended();
 private:
 	Victor *m_motor;
 	Solenoid *m_piston1;
