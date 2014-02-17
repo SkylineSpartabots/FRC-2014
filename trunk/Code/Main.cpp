@@ -1,9 +1,12 @@
 #include "Main.h"
 
 #define CONTROLLER XBOX
+#define DRIVING TANK
 
 #define XBOX 1
 #define JOYSTICKS 2 // Joystick controlling not implemented
+#define TANK 1
+#define ARCADE 2
 
 // Constructor: Called before RobotInit(); WPILIB is not guaranteed to be fully working here
 MainRobot::MainRobot()
@@ -114,59 +117,77 @@ void MainRobot::OperatorControl()
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
 		
 		if (CONTROLLER == XBOX) {
-		// DRIVING
-			
-			// (for the two code lines below) The minus in front makes the robot drive in the
-			// direction of the collector (when joysticks are forward)
-			float leftY = -Cutoff(driveController->GetAxis(driveController->LeftY));
-			float rightY = -Cutoff(driveController->GetAxis(driveController->RightY));
-			
-			// Drive reversal when left trigger down (go opposite direction)
-			if (driveController->GetAxis(driveController->Bumper) >= 0.4) {
-				leftY = -leftY;
-				rightY = -rightY;
+			// DRIVING
+			// ----------------------------------------------------------------------
+			if (DRIVING == TANK) {
+				// (for the two code lines below) The minus in front makes the robot drive in the
+				// direction of the collector (when joysticks are forward)
+				float leftY = -Cutoff(driveController->GetAxis(driveController->LeftY));
+				float rightY = -Cutoff(driveController->GetAxis(driveController->RightY));
+				
+				// Drive reversal when left trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() >= 0.4) {
+					leftY = -leftY;
+					rightY = -rightY;
+				}
+				
+				m_drive->TankDrive(leftY, rightY);
+			} else if (DRIVING == ARCADE) {
+				float arcadeY = -Cutoff(driveController->GetLeftYAxis());
+				float arcadeX = -Cutoff(driveController->GetLeftXAxis());
+				
+				if (arcadeY == 0 && arcadeX == 0) {
+					arcadeY = -Cutoff(driveController->GetRightYAxis());
+					arcadeX = -Cutoff(driveController->GetRightXAxis());
+				}
+				
+				// Drive reversal when left trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() >= 0.4) {
+					arcadeY = -arcadeY;
+					arcadeX = -arcadeX;
+				}
+				
+				m_drive->ArcadeDrive(arcadeY, arcadeX);
 			}
-			
-			SmartDashboard::PutNumber("Triggers", driveController->GetAxis(driveController->Bumper));
-			
-			m_drive->TankDrive(leftY, rightY);
-			
-		// PISTON BUTTONS (FOR COLLECTOR)
-			if (driveController->GetLeftBumperButton()) {
+				
+			// PISTON BUTTONS (FOR COLLECTOR)
+			// ----------------------------------------------------------------------
+			if (shootController->GetLeftBumperButton()) {
 				m_collector->PistonPull();
-			} else if (driveController->GetRightBumperButton()) {
+			} else if (shootController->GetRightBumperButton()) {
 				m_collector->PistonPush();
 				Wait(2.0);
 				m_collector->PistonNeutral();
 			}
-			
-		// SPIN BUTTONS (FOR COLLECTOR)
-			if (driveController->GetAButton()){
+				
+			// SPIN BUTTONS (FOR COLLECTOR)
+			// ----------------------------------------------------------------------
+			if (shootController->GetXButton()){
 				m_collector->SpinInwards();
-			} else if (driveController->GetBButton()){
+			} else if (shootController->GetYButton()){
 				m_collector->SpinOutwards();
-			} else if (driveController->GetYButton()){
+			} else {
 				m_collector->SpinStop();
 			}
 			
-		// SHOOTING
-			/* The Set() values below (-.15 & .15) indicate the power
-			 * to the motor (15%) and are very important to understand
-			 * before changing. It controls the speed of the shooter 
-			 * arm while the button is pressed. If the values are too high,
-			 * you run the risk of wrapping the arm into the robot
-			 * (or around the robot).  
-			 */
-			if (shootController->GetRawButton(shootController->A)) {
+			// SHOOTING
+			// ----------------------------------------------------------------------
+			// The Set() values below (-.15 & .15) indicate the power
+			// to the motor (15%) and are very important to understand
+			// before changing. It controls the speed of the shooter
+			// arm while the button is pressed. If the values are too high,
+			// you run the risk of wrapping the arm into the robot
+			// (or around the robot).
+			if (shootController->GetAButton()) {
 				m_shooter->Set(-.15);
-			} else if (shootController->GetRawButton(shootController->B)) {
+			} else if (shootController->GetBButton()) {
 				m_shooter->Set(.15);
 			} else {
 				m_shooter->Set(0);
 			}
 			
-			float bumper = shootController->GetAxis(shootController->Bumper); 
-			if (bumper >= 0.4){
+			float trigger = shootController->GetTriggerAxis();
+			if (trigger >= 0.4){
 				if (!isShooting) {
 					m_shooter->shootWithArm();  // This is a blocking function, it will stop the main loop
 												// until it finishes executing. We'll need a separate thread
@@ -178,7 +199,22 @@ void MainRobot::OperatorControl()
 			}
 			
 		} else if (CONTROLLER == JOYSTICKS) { // Xbox is a higher priority, do this later
-			m_drive->TankDrive(m_leftStick, m_rightStick);
+			if (DRIVING == TANK) {
+				float leftY = -Cutoff(m_leftStick->GetY());
+				float rightY = -Cutoff(m_leftStick->GetX());
+				
+				m_drive->TankDrive(leftY, rightY);
+			} else if (DRIVING == ARCADE) {
+				float arcadeY = -Cutoff(m_leftStick->GetY());
+				float arcadeX = -Cutoff(m_leftStick->GetX());
+				
+				if (arcadeY == 0 && arcadeX == 0) {
+					arcadeY = -Cutoff(m_rightStick->GetY());
+					arcadeX = -Cutoff(m_rightStick->GetX());
+				}
+				
+				m_drive->ArcadeDrive(arcadeY, arcadeX);
+			}
 			
 		}
 		

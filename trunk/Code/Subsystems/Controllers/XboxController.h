@@ -12,7 +12,7 @@ public:
         enum Axis {
                 LeftX = 1,
                 LeftY = 2,
-                Bumper = 3,
+                Trigger = 3,
                 RightX = 4,
                 RightY = 5
         };
@@ -44,7 +44,7 @@ public:
         
         float GetLeftXAxis();
         float GetLeftYAxis();
-        float GetBumperAxis();
+        float GetTriggerAxis();
         float GetRightXAxis();
         float GetRightYAxis();
         

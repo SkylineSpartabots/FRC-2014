@@ -49,8 +49,8 @@ float XboxController::GetLeftYAxis() {
  * If the left one is fully pressed, this returns -1. If both
  * are pressed, the sum of both is the outputted value.
  */
-float XboxController::GetBumperAxis() {
-        return GetAxis(Bumper);
+float XboxController::GetTriggerAxis() {
+        return GetAxis(Trigger);
 }
 
 float XboxController::GetRightXAxis() {
