@@ -114,7 +114,7 @@ void MainRobot::OperatorControl()
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
 		
 		if (CONTROLLER == XBOX) {
-			// DRIVING
+		// DRIVING
 			
 			// (for the two code lines below) The minus in front makes the robot drive in the
 			// direction of the collector (when joysticks are forward)
@@ -131,7 +131,7 @@ void MainRobot::OperatorControl()
 			
 			m_drive->TankDrive(leftY, rightY);
 			
-			// PISTON BUTTONS (FOR COLLECTOR)
+		// PISTON BUTTONS (FOR COLLECTOR)
 			if (driveController->GetLeftBumperButton()) {
 				m_collector->PistonPull();
 			} else if (driveController->GetRightBumperButton()) {
@@ -140,7 +140,7 @@ void MainRobot::OperatorControl()
 				m_collector->PistonNeutral();
 			}
 			
-			// SPIN BUTTONS (FOR COLLECTOR)
+		// SPIN BUTTONS (FOR COLLECTOR)
 			if (driveController->GetAButton()){
 				m_collector->SpinInwards();
 			} else if (driveController->GetBButton()){
@@ -149,11 +149,18 @@ void MainRobot::OperatorControl()
 				m_collector->SpinStop();
 			}
 			
-			// SHOOTING
+		// SHOOTING
+			/* The Set() values below (-.15 & .15) indicate the power
+			 * to the motor (15%) and are very important to understand
+			 * before changing. It controls the speed of the shooter 
+			 * arm while the button is pressed. If the values are too high,
+			 * you run the risk of wrapping the arm into the robot
+			 * (or around the robot).  
+			 */
 			if (shootController->GetRawButton(shootController->A)) {
-				m_shooter->Set(-.1);
+				m_shooter->Set(-.15);
 			} else if (shootController->GetRawButton(shootController->B)) {
-				m_shooter->Set(.2);
+				m_shooter->Set(.15);
 			} else {
 				m_shooter->Set(0);
 			}

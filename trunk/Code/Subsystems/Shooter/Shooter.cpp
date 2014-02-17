@@ -2,7 +2,13 @@
 
 bool shoot_power = 1;
 double upDownArmTime = 0.25;
-double shootTime = 0.1;
+
+/* The shootTime value is very important to understand before changing.  
+ * It controls the time that the shooter arm is allowed to rotate.
+ * If the value is too high, the arm will wrap around (and into) the
+ * back of the robot. 
+ */
+double shootTime = 0.2;
 
 Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
 		Talon *motorRight2, DigitalInput *limitSwitchBottom, DigitalInput *limitSwitchTop, Collector *collector){
