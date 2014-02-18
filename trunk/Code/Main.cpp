@@ -57,6 +57,7 @@ void MainRobot::InitializeHardware()
 	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterLimitSwitchBottom = new DigitalInput(Ports::DigitalSidecar::Gpio2);
 	m_shooterLimitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
+	m_camera = AxisCamera::GetInstance("10.29.76.11");
 	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio11);
 }
 
@@ -67,8 +68,7 @@ void MainRobot::InitializeSoftware()
 	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2, m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch);
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1,
 			m_shooterRight2, m_shooterLimitSwitchBottom, m_shooterLimitSwitchTop, m_collector);
-	netTable = NetworkTable::GetTable("DashboardData");
-	netTable->PutNumber("Test", 42);
+	netTable = NetworkTable::GetTable("VisionTargetInfo");
 }
 
 bool autonomousDidShoot = false;
@@ -80,14 +80,12 @@ void MainRobot::Autonomous()
 	Wait(.625);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	
-	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
-	
 	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
 	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
 	// to shoot again
 	int autonomousLifetime = 0;
 	while (IsAutonomous() && IsEnabled()) {
-		ColorImage *image = camera.GetImage();					// Get the image from the Camera
+		ColorImage *image = m_camera.GetImage();
 		
 		if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
 			continue;
@@ -96,12 +94,8 @@ void MainRobot::Autonomous()
 		SmartDashboard::PutNumber("Autonomous Lifetime", ++autonomousLifetime);
 		
 		TargetReport* report = Vision::process(image);
-		SmartDashboard::PutBoolean("Target Hot", report->Hot);
-		SmartDashboard::PutNumber("Target Distance", report->distance);
+		netTable->PutBoolean("Target Hot", report->Hot);
 		netTable->PutNumber("Target Distance", report->distance);
-		SmartDashboard::PutNumber("Particle Reports", report->reports);
-		SmartDashboard::PutNumber("Left Score", report->leftScore);
-		SmartDashboard::PutNumber("Right Score", report->rightScore);
 		
 		if (!autonomousDidShoot && report->Hot) {
 			m_shooter->Shoot();
@@ -112,13 +106,27 @@ void MainRobot::Autonomous()
 }
 
 bool isShooting = false;
+int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
-	
 	int operatorControlLifetime = 0;
 	while (IsOperatorControl()) {
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
+		
+		nextImageCheck++;
+		if (nextImageCheck >= 20) {
+			nextImageCheck = 0;
+			ColorImage *image = m_camera.GetImage();
+					
+			if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
+				continue;
+			}
+			
+			TargetReport* report = Vision::process(image);
+			netTable->PutBoolean("Target Hot", report->Hot);
+			netTable->PutNumber("Target Distance", report->distance);
+		}
 		
 		if (CONTROLLER == XBOX) {
 			// DRIVING

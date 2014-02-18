@@ -20,6 +20,8 @@ private:
 	XboxController *driveController;
 	XboxController *shootController;
 	
+	AxisCamera &m_camera;
+	
 	Victor *m_collectorMotor;
 	Compressor *m_compressor;
 	Solenoid *m_solenoid1;
