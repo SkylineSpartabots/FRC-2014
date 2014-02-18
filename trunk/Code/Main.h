@@ -35,6 +35,7 @@ private:
 	Talon *m_shooterRight2;
 	DigitalInput *m_shooterLimitSwitchBottom;
 	DigitalInput *m_shooterLimitSwitchTop;
+	DigitalInput *m_pistonLimitSwitch; 
 	
 	//Claw *m_claw;
 	Collector *m_collector;

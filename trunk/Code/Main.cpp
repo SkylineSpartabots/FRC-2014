@@ -57,13 +57,14 @@ void MainRobot::InitializeHardware()
 	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterLimitSwitchBottom = new DigitalInput(Ports::DigitalSidecar::Gpio2);
 	m_shooterLimitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
+	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio11);
 }
 
 // InitializeSoftware: Initialize subsystems
 void MainRobot::InitializeSoftware()
 {
 	//m_claw = new Claw(m_clawMotor);
-	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2, m_solenoid3, m_solenoid4, m_compressor);
+	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2, m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch);
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1,
 			m_shooterRight2, m_shooterLimitSwitchBottom, m_shooterLimitSwitchTop, m_collector);
 	netTable = NetworkTable::GetTable("DashboardData");
@@ -159,8 +160,9 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (shootController->GetRightBumperButton()) {
 				m_collector->PistonPush();
-				Wait(1);
-				m_collector->PistonNeutral();
+				if(m_collector->isFullyExtended() == true){
+					m_collector->PistonNeutral();
+				}
 			}
 				
 			// SPIN BUTTONS (FOR COLLECTOR)

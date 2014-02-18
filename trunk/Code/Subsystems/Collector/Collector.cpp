@@ -15,14 +15,14 @@ Plz don't remove Mister Roflcoptor, kthx
  */
 
 Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2,
-		Solenoid *piston3, Solenoid *piston4, Compressor *compressor/*, DigitalInput *limitSwitch*/) {
+		Solenoid *piston3, Solenoid *piston4, Compressor *compressor, DigitalInput *pistonLimitSwitch) {
 	m_motor = motor;
 	m_piston1 = piston1;
 	m_piston2 = piston2;
 	m_piston3 = piston3;
 	m_piston4 = piston4;
 	m_compressor = compressor;
-	//m_limitSwitch = limitSwitch;
+	m_pistonLimitSwitch = pistonLimitSwitch; 
 }
 
 /*
@@ -76,4 +76,11 @@ bool Collector::isExtended(){
 		return true;
 	}
 	else return false;
+}
+
+bool Collector::isFullyExtended(){
+	if(m_pistonLimitSwitch->Get() == true){
+		return true; 
+	}
+	else return false; 
 }
