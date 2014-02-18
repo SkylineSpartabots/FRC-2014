@@ -32,11 +32,11 @@ bool Collector::GetLimitSwitch() {
 */
 
 void Collector::SpinInwards() {
-	m_motor->Set(0.45);
+	m_motor->Set(0.70);
 }
 
 void Collector::SpinOutwards() {
-	m_motor->Set(-0.45);
+	m_motor->Set(-0.70);
 }
 
 void Collector::SpinStop() {

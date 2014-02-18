@@ -156,7 +156,7 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (shootController->GetRightBumperButton()) {
 				m_collector->PistonPush();
-				Wait(2.0);
+				Wait(1);
 				m_collector->PistonNeutral();
 			}
 				
@@ -189,9 +189,7 @@ void MainRobot::OperatorControl()
 			float trigger = shootController->GetTriggerAxis();
 			if (trigger >= 0.4){
 				if (!isShooting) {
-					m_shooter->shootWithArm();  // This is a blocking function, it will stop the main loop
-												// until it finishes executing. We'll need a separate thread
-												// if we want it to not temporarily stop the main loop
+					m_shooter->shootWithArm();
 					isShooting = true;
 				}
 			} else {
