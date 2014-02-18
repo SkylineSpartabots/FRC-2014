@@ -8,19 +8,11 @@
 #define TANK 1
 #define ARCADE 2
 
-// Constructor: Called before RobotInit(); WPILIB is not guaranteed to be fully working here
-MainRobot::MainRobot()
-{
+MainRobot::MainRobot() {
 	InitializeHardware();
 	InitializeSoftware();
 	
 	m_drive->SetExpiration(0.1);
-}
-
-// RobotInit: Called after WPILIB are guaranteed to be initialized
-void MainRobot::RobotInit()
-{
-	
 }
 
 // InitializeHardware: Objects for interacting with hardware are initialized here
@@ -55,10 +47,8 @@ void MainRobot::InitializeHardware()
 	m_shooterLeft2 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterRight1 = new Talon(Ports::DigitalSidecar::Pwm4);
 	m_shooterRight2 = new Talon(Ports::DigitalSidecar::Pwm4);
-	m_shooterLimitSwitchBottom = new DigitalInput(Ports::DigitalSidecar::Gpio2);
-	m_shooterLimitSwitchTop = new DigitalInput(Ports::DigitalSidecar::Gpio3);
-	m_camera = AxisCamera::GetInstance("10.29.76.11");
 	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio11);
+	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio12);
 }
 
 // InitializeSoftware: Initialize subsystems
@@ -67,7 +57,7 @@ void MainRobot::InitializeSoftware()
 	//m_claw = new Claw(m_clawMotor);
 	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2, m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch);
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1,
-			m_shooterRight2, m_shooterLimitSwitchBottom, m_shooterLimitSwitchTop, m_collector);
+			m_shooterRight2, m_shooterLimitSwitch, m_collector);
 	netTable = NetworkTable::GetTable("VisionTargetInfo");
 }
 
@@ -80,12 +70,14 @@ void MainRobot::Autonomous()
 	Wait(.625);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	
 	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
 	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
 	// to shoot again
 	int autonomousLifetime = 0;
 	while (IsAutonomous() && IsEnabled()) {
-		ColorImage *image = m_camera.GetImage();
+		ColorImage *image = camera.GetImage();
 		
 		if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
 			continue;
@@ -111,13 +103,15 @@ void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
 	int operatorControlLifetime = 0;
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	
 	while (IsOperatorControl()) {
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
 		
 		nextImageCheck++;
 		if (nextImageCheck >= 20) {
 			nextImageCheck = 0;
-			ColorImage *image = m_camera.GetImage();
+			ColorImage *image = camera.GetImage();
 					
 			if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
 				continue;
@@ -168,9 +162,10 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (shootController->GetRightBumperButton()) {
 				m_collector->PistonPush();
-				if(m_collector->isFullyExtended() == true){
-					m_collector->PistonNeutral();
-				}
+			}
+			
+			if (m_collector->isFullyExtended() == true){
+				m_collector->PistonNeutral();
 			}
 				
 			// SPIN BUTTONS (FOR COLLECTOR)

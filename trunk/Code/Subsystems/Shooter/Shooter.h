@@ -7,7 +7,7 @@
 class Shooter {
 	public:
 		Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
-				Talon *motorRight2, DigitalInput *limitSwitchBottom, DigitalInput *limitSwitchTop, Collector *collector);
+				Talon *motorRight2, DigitalInput *limitSwitch, Collector *collector);
 		~Shooter();
 		void Shoot();
 		void Set(double power);
@@ -20,7 +20,6 @@ class Shooter {
 		Talon *m_motorLeft2;
 		Talon *m_motorRight1;
 		Talon *m_motorRight2;
-		DigitalInput *m_limitSwitchBottom;
-		DigitalInput *m_limitSwitchTop;
+		DigitalInput *m_limitSwitch;
 };
 #endif

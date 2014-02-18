@@ -19,9 +19,6 @@ private:
 	Joystick *m_leftStick;
 	XboxController *driveController;
 	XboxController *shootController;
-	
-	AxisCamera &m_camera;
-	
 	Victor *m_collectorMotor;
 	Compressor *m_compressor;
 	Solenoid *m_solenoid1;
@@ -35,8 +32,7 @@ private:
 	Talon *m_shooterLeft2;
 	Talon *m_shooterRight1;
 	Talon *m_shooterRight2;
-	DigitalInput *m_shooterLimitSwitchBottom;
-	DigitalInput *m_shooterLimitSwitchTop;
+	DigitalInput *m_shooterLimitSwitch; 
 	DigitalInput *m_pistonLimitSwitch; 
 	
 	//Claw *m_claw;
