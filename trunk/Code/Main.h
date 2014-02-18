@@ -9,6 +9,7 @@
 
 #include "Vision/RGBImage.h"
 #include "SmartDashboard/SmartDashboard.h"
+#include "NetworkTables/NetworkTable.h"
 
 class MainRobot : public SimpleRobot
 {
@@ -38,6 +39,9 @@ private:
 	//Claw *m_claw;
 	Collector *m_collector;
 	Shooter *m_shooter;
+	
+	// Network Table
+	NetworkTable *netTable;
 	
 public:
 	MainRobot();

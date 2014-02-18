@@ -66,6 +66,8 @@ void MainRobot::InitializeSoftware()
 	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2, m_solenoid3, m_solenoid4, m_compressor);
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1,
 			m_shooterRight2, m_shooterLimitSwitchBottom, m_shooterLimitSwitchTop, m_collector);
+	netTable = NetworkTable::GetTable("DashboardData");
+	netTable->PutNumber("Test", 42);
 }
 
 bool autonomousDidShoot = false;
@@ -74,7 +76,7 @@ void MainRobot::Autonomous()
 	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
-	Wait(2.5);
+	Wait(.625);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	
 	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
@@ -94,7 +96,8 @@ void MainRobot::Autonomous()
 		
 		TargetReport* report = Vision::process(image);
 		SmartDashboard::PutBoolean("Target Hot", report->Hot);
-		SmartDashboard::PutNumber("Target Distance", report->distance/1.0);
+		SmartDashboard::PutNumber("Target Distance", report->distance);
+		netTable->PutNumber("Target Distance", report->distance);
 		SmartDashboard::PutNumber("Particle Reports", report->reports);
 		SmartDashboard::PutNumber("Left Score", report->leftScore);
 		SmartDashboard::PutNumber("Right Score", report->rightScore);
