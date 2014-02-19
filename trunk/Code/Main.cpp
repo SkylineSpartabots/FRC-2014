@@ -15,6 +15,10 @@ MainRobot::MainRobot() {
 	m_drive->SetExpiration(0.1);
 }
 
+void MainRobot::RobotInit() {
+	
+}
+
 // InitializeHardware: Objects for interacting with hardware are initialized here
 void MainRobot::InitializeHardware()
 {
@@ -98,16 +102,16 @@ void MainRobot::Autonomous()
 }
 
 bool isShooting = false;
-int nextImageCheck = 0;
+//int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
 	int operatorControlLifetime = 0;
-	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	//AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	while (IsOperatorControl()) {
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
-		
+		/*
 		nextImageCheck++;
 		if (nextImageCheck >= 20) {
 			nextImageCheck = 0;
@@ -120,7 +124,7 @@ void MainRobot::OperatorControl()
 			TargetReport* report = Vision::process(image);
 			netTable->PutBoolean("Target Hot", report->Hot);
 			netTable->PutNumber("Target Distance", report->distance);
-		}
+		}*/
 		
 		if (CONTROLLER == XBOX) {
 			// DRIVING

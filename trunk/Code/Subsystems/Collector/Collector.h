@@ -25,8 +25,8 @@
 
 class Collector {
 public:
-	Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3, Solenoid *piston4, Compressor *compressor , 
-			DigitalInput *m_pistonLimitSwitch);
+	Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3,
+			Solenoid *piston4, Compressor *compressor,  DigitalInput *pistonLimitSwitch);
 	//bool GetLimitSwitch();
 	void SpinInwards();
 	void SpinOutwards();
