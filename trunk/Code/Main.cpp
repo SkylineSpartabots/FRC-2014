@@ -71,7 +71,7 @@ void MainRobot::Autonomous()
 	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
-	Wait(.625);
+	Wait(1.2);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	
 	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
@@ -94,7 +94,8 @@ void MainRobot::Autonomous()
 		netTable->PutNumber("Target Distance", report->distance);
 		
 		if (!autonomousDidShoot && report->Hot) {
-			m_shooter->Shoot();
+			autonomousDidShoot = true;
+			m_shooter->shootWithArm();
 		}
 		
 		Wait(0.5);
@@ -165,11 +166,18 @@ void MainRobot::OperatorControl()
 			if (shootController->GetLeftBumperButton()) {
 				m_collector->PistonPull();
 			} else if (shootController->GetRightBumperButton()) {
-				m_collector->PistonPush();
-			}
-			
-			if (m_collector->isFullyExtended() == true){
-				m_collector->PistonNeutral();
+				if (m_shooter->GetLimitSwitch()) {
+					m_collector->PistonPush();
+					/*Wait(1.0);
+					m_collector->PistonNeutral();*/
+					
+					while (true) {
+						if (m_collector->isFullyExtended()){
+							m_collector->PistonNeutral();
+							break;
+						}
+					}
+				}
 			}
 				
 			// SPIN BUTTONS (FOR COLLECTOR)
@@ -190,6 +198,7 @@ void MainRobot::OperatorControl()
 			// arm while the button is pressed. If the values are too high,
 			// you run the risk of wrapping the arm into the robot
 			// (or around the robot).
+			
 			if (shootController->GetAButton()) {
 				m_shooter->Set(-.15);
 			} else if (shootController->GetBButton()) {

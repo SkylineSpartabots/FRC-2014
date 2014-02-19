@@ -1,7 +1,7 @@
 #include "Shooter.h"
 
-bool shoot_power = 1;
-bool reset_power = 0.05;
+double shoot_power = 1;
+double reset_power = 0.15;
 double upDownArmTime = 0.25;
 
 /* The shootTime value is very important to understand before changing.  
@@ -67,16 +67,19 @@ void Shooter::Reset() {
 	m_motorRight2->Set(0);*/
 }
 
+bool Shooter::GetLimitSwitch() {
+	return m_limitSwitch->Get();
+}
+
 void Shooter::shootWithArm() {
 	m_collector->PistonPush();
-	Wait(upDownArmTime);
-	m_collector->PistonNeutral();
-	Wait(0.1);
 	
-	Shoot();
-	Wait(shootTime);
-	Stop();
-	Wait(2);
+	while (true) {
+		if (m_collector->isFullyExtended()){
+			m_collector->PistonNeutral();
+			break;
+		}
+	}
 	Reset();
 	while(true) {
 		if (m_limitSwitch->Get()) {
@@ -85,6 +88,21 @@ void Shooter::shootWithArm() {
 		}
 	}
 	
+	Shoot();
+	Wait(shootTime);
+	Stop();
+	Wait(2);
+	Reset();
+	
+	while(true) {
+		if (m_limitSwitch->Get()) {
+			Stop();
+			break;
+		}
+	}
+	
+	/*
 	m_collector->PistonPull();
 	Wait(upDownArmTime);
+	*/
 }

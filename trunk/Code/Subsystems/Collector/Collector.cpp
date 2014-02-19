@@ -79,5 +79,5 @@ bool Collector::isExtended(){
 }
 
 bool Collector::isFullyExtended(){
-	return m_pistonLimitSwitch->Get();
+	return !m_pistonLimitSwitch->Get();
 }

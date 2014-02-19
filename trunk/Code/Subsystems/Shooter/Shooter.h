@@ -13,7 +13,8 @@ class Shooter {
 		void Set(double power);
 		void Stop();
 		void Reset();
-		void shootWithArm(); 
+		void shootWithArm();
+		bool GetLimitSwitch();
 	private:
 		Collector *m_collector;
 		Talon *m_motorLeft1;
