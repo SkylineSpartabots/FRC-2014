@@ -1,12 +1,12 @@
 #include "Main.h"
 
-#define CONTROLLER XBOX
-#define DRIVING TANK
-
 #define XBOX 1
 #define JOYSTICKS 2 // Joystick controlling not implemented
 #define TANK 1
 #define ARCADE 2
+
+int CONTROLLER = XBOX;
+int DRIVING = TANK;
 
 MainRobot::MainRobot() {
 	InitializeHardware();
@@ -63,6 +63,7 @@ void MainRobot::InitializeSoftware()
 	m_shooter = new Shooter(m_shooterLeft1, m_shooterLeft2, m_shooterRight1,
 			m_shooterRight2, m_shooterLimitSwitch, m_collector);
 	netTable = NetworkTable::GetTable("VisionTargetInfo");
+	netTable->PutNumber("Driving", DRIVING);
 }
 
 bool autonomousDidShoot = false;
@@ -119,6 +120,10 @@ void MainRobot::OperatorControl()
 	//AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	while (IsOperatorControl()) {
+		int driving = (int) netTable->GetNumber("Driving");
+		if (driving != DRIVING) {
+			DRIVING = driving;
+		}
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
 		/*
 		nextImageCheck++;
