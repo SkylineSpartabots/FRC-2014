@@ -35,6 +35,7 @@ public:
 	void PistonPull();
 	void PistonNeutral();
 	void PistonSlightPush();
+	void BringArmDown();
 	bool isExtended();
 	bool isFullyExtended(); 
 private:

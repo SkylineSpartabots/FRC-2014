@@ -68,13 +68,21 @@ void MainRobot::InitializeSoftware()
 bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
+	m_collector->BringArmDown();
+	m_shooter->BringArmDown();
+	
+	m_collector->SpinInwards();
+	Wait(4.5);
+	
 	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
 	Wait(1.2);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	
-	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	m_shooter->ShootWithArm();
+	
+	/*AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
 	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
@@ -95,11 +103,11 @@ void MainRobot::Autonomous()
 		
 		if (!autonomousDidShoot && report->Hot) {
 			autonomousDidShoot = true;
-			m_shooter->shootWithArm();
+			m_shooter->ShootWithArm();
 		}
 		
 		Wait(0.5);
-	}
+	}*/
 }
 
 bool isShooting = false;
@@ -167,16 +175,7 @@ void MainRobot::OperatorControl()
 				m_collector->PistonPull();
 			} else if (shootController->GetRightBumperButton()) {
 				if (m_shooter->GetLimitSwitch()) {
-					m_collector->PistonPush();
-					/*Wait(1.0);
-					m_collector->PistonNeutral();*/
-					
-					while (true) {
-						if (m_collector->isFullyExtended()){
-							m_collector->PistonNeutral();
-							break;
-						}
-					}
+					m_collector->BringArmDown();
 				}
 			}
 				
@@ -210,7 +209,7 @@ void MainRobot::OperatorControl()
 			float trigger = shootController->GetTriggerAxis();
 			if (trigger >= 0.4){
 				if (!isShooting) {
-					m_shooter->shootWithArm();
+					m_shooter->ShootWithArm();
 					isShooting = true;
 				}
 			} else {

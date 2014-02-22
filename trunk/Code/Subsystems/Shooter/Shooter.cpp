@@ -71,15 +71,7 @@ bool Shooter::GetLimitSwitch() {
 	return m_limitSwitch->Get();
 }
 
-void Shooter::shootWithArm() {
-	m_collector->PistonPush();
-	
-	while (true) {
-		if (m_collector->isFullyExtended()){
-			m_collector->PistonNeutral();
-			break;
-		}
-	}
+void Shooter::BringArmDown() {
 	Reset();
 	while(true) {
 		if (m_limitSwitch->Get()) {
@@ -87,22 +79,15 @@ void Shooter::shootWithArm() {
 			break;
 		}
 	}
+}
+
+void Shooter::ShootWithArm() {
+	m_collector->BringArmDown();
+	BringArmDown();
 	
 	Shoot();
 	Wait(shootTime);
 	Stop();
 	Wait(2);
-	Reset();
-	
-	while(true) {
-		if (m_limitSwitch->Get()) {
-			Stop();
-			break;
-		}
-	}
-	
-	/*
-	m_collector->PistonPull();
-	Wait(upDownArmTime);
-	*/
+	BringArmDown();
 }
