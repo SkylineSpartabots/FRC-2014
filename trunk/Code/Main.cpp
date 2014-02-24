@@ -112,12 +112,12 @@ void MainRobot::Autonomous()
 }
 
 bool isShooting = false;
-//int nextImageCheck = 0;
+int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
 	int operatorControlLifetime = 0;
-	//AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	while (IsOperatorControl()) {
 		int driving = (int) netTable->GetNumber("Driving");
@@ -125,9 +125,9 @@ void MainRobot::OperatorControl()
 			DRIVING = driving;
 		}
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
-		/*
+		
 		nextImageCheck++;
-		if (nextImageCheck >= 20) {
+		if (nextImageCheck >= 800) {
 			nextImageCheck = 0;
 			ColorImage *image = camera.GetImage();
 					
@@ -138,7 +138,7 @@ void MainRobot::OperatorControl()
 			TargetReport* report = Vision::process(image);
 			netTable->PutBoolean("Target Hot", report->Hot);
 			netTable->PutNumber("Target Distance", report->distance);
-		}*/
+		}
 		
 		if (CONTROLLER == XBOX) {
 			// DRIVING
