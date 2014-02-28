@@ -64,6 +64,7 @@ void MainRobot::InitializeSoftware()
 			m_shooterRight2, m_shooterLimitSwitch, m_collector);
 	netTable = NetworkTable::GetTable("VisionTargetInfo");
 	netTable->PutNumber("Driving", DRIVING);
+	m_timer = new Timer();
 }
 
 bool autonomousDidShoot = false;
@@ -116,6 +117,11 @@ int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
 	m_drive->SetSafetyEnabled(true);
+	
+	m_timer->Stop();
+	m_timer->Reset();
+	m_timer->Start();
+		
 	int operatorControlLifetime = 0;
 	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
@@ -125,7 +131,9 @@ void MainRobot::OperatorControl()
 			DRIVING = driving;
 		}
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
-		
+		SmartDashboard::PutNumber("Countdown Timer", 140 - m_timer->Get());
+		if(130 - m_timer->Get() < 10)
+			SmartDashboard::PutString("Countdown Alert", "Raise arm");
 		nextImageCheck++;
 		if (nextImageCheck >= 800) {
 			nextImageCheck = 0;

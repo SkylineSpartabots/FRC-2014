@@ -42,6 +42,8 @@ private:
 	// Network Table
 	NetworkTable *netTable;
 	
+	Timer *m_timer;
+	
 public:
 	MainRobot();
 	void RobotInit();
