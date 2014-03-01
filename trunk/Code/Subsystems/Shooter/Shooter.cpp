@@ -11,6 +11,8 @@ double upDownArmTime = 0.25;
  */
 double shootTime = 0.2;
 
+Timer* timer = new Timer();
+
 Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
 		Talon *motorRight2, DigitalInput *limitSwitch, Collector *collector){
 	m_collector = collector;
@@ -73,12 +75,16 @@ bool Shooter::GetLimitSwitch() {
 
 void Shooter::BringArmDown() {
 	Reset();
+	
+	timer->Start();
 	while(true) {
-		if (m_limitSwitch->Get()) {
+		if (m_limitSwitch->Get() || timer->Get() >= 4) {
 			Stop();
 			break;
 		}
 	}
+	timer->Stop();
+	timer->Reset();
 }
 
 void Shooter::ShootWithArm() {
@@ -94,10 +100,12 @@ void Shooter::ShootWithArm() {
 
 void Shooter::ShooterPass(){
 	m_collector->PistonPull();
+	Wait(1.25);
 	m_collector->SpinOutwards();
 	Set(0.2);
 	Wait(0.3);
 	Set(0);
+	Wait(2);
 	m_collector->SpinStop();
 	BringArmDown();
 }

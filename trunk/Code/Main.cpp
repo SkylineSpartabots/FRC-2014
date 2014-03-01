@@ -7,7 +7,7 @@
 #define ARCADE2 3
 
 int CONTROLLER = XBOX;
-int DRIVING = TANK;
+int DRIVING = ARCADE2;
 
 MainRobot::MainRobot() {
 	InitializeHardware();
@@ -75,7 +75,8 @@ void MainRobot::Autonomous()
 	m_shooter->BringArmDown();
 	
 	m_collector->SpinInwards();
-	Wait(4.5);
+	Wait(3.5);
+	m_collector->SpinStop();
 	
 	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
@@ -218,7 +219,7 @@ void MainRobot::OperatorControl()
 			
 			// PASSING
 			// ----------------------------------------------------------------------
-			if(shootController->GetLeftBumperButton()) {
+			if(driveController->GetAButton()) {
 				m_shooter->ShooterPass();
 			}
 			
