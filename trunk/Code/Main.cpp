@@ -4,6 +4,7 @@
 #define JOYSTICKS 2 // Joystick controlling not implemented
 #define TANK 1
 #define ARCADE 2
+#define ARCADE2 3
 
 int CONTROLLER = XBOX;
 int DRIVING = TANK;
@@ -172,6 +173,17 @@ void MainRobot::OperatorControl()
 					arcadeY = -Cutoff(driveController->GetRightYAxis());
 					arcadeX = -Cutoff(driveController->GetRightXAxis());
 				}
+				
+				// Drive reversal when left trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() >= 0.4) {
+					arcadeY = -arcadeY;
+					arcadeX = -arcadeX;
+				}
+				
+				m_drive->ArcadeDrive(arcadeY, arcadeX);
+			} else if (DRIVING == ARCADE2) {
+				float arcadeY = -Cutoff(driveController->GetLeftYAxis());
+				float arcadeX = -Cutoff(driveController->GetRightXAxis());
 				
 				// Drive reversal when left trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() >= 0.4) {
