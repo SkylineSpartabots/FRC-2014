@@ -44,9 +44,9 @@ float XboxController::GetLeftYAxis() {
 }
 
 /**
- * Returns the bumpers. The bumpers are the two trigger-like things.
- * If the right one is fully pressed, this returns 1.
- * If the left one is fully pressed, this returns -1. If both
+ * Returns the trigger. The triggers are the two trigger-like things.
+ * If the left one is fully pressed, this returns 1.
+ * If the right one is fully pressed, this returns -1. If both
  * are pressed, the sum of both is the outputted value.
  */
 float XboxController::GetTriggerAxis() {

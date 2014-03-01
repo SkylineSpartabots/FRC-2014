@@ -202,6 +202,14 @@ void MainRobot::OperatorControl()
 				m_collector->SpinStop();
 			}
 			
+
+			
+			// PASSING
+			// ----------------------------------------------------------------------
+			if(shootController->GetLeftBumperButton()) {
+				m_shooter->ShooterPass();
+			}
+			
 			// SHOOTING
 			// ----------------------------------------------------------------------
 			// The Set() values below (-.15 & .15) indicate the power
@@ -219,8 +227,9 @@ void MainRobot::OperatorControl()
 				m_shooter->Set(0);
 			}
 			
+				
 			float trigger = shootController->GetTriggerAxis();
-			if (trigger >= 0.4){
+			if (trigger <= -0.4){
 				if (!isShooting) {
 					m_shooter->ShootWithArm();
 					isShooting = true;

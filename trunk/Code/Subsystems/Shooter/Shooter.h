@@ -16,6 +16,7 @@ class Shooter {
 		void ShootWithArm();
 		void BringArmDown();
 		bool GetLimitSwitch();
+		void ShooterPass();
 	private:
 		Collector *m_collector;
 		Talon *m_motorLeft1;

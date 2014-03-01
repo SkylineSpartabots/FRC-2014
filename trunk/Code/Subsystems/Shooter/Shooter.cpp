@@ -91,3 +91,13 @@ void Shooter::ShootWithArm() {
 	Wait(2);
 	BringArmDown();
 }
+
+void Shooter::ShooterPass(){
+	m_collector->PistonPull();
+	m_collector->SpinOutwards();
+	Set(0.2);
+	Wait(0.3);
+	Set(0);
+	m_collector->SpinStop();
+	BringArmDown();
+}
