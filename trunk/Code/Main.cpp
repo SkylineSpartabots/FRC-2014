@@ -68,22 +68,24 @@ void MainRobot::InitializeSoftware()
 	m_timer = new Timer();
 }
 
-bool autonomousDidShoot = false;
+//bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
 	m_collector->BringArmDown();
 	m_shooter->BringArmDown();
 	
 	m_collector->SpinInwards();
-	Wait(3.5);
+	m_drive->Drive(0.5, 0.0);
+	Wait(.2); // drive backwards while spinning, collect ball (for 0.2)
+	m_drive->Drive(0.0, 0.0);
+	Wait(2.3); // Wait 2.5 until stop spinning
 	m_collector->SpinStop();
 	
-	// Drive foward at 0.5 for 2.5 seconds
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
-	Wait(1.2);
+	Wait(1.3);
 	m_drive->Drive(0.0, 0.0); // Stop driving
-	
+	Wait(2);
 	m_shooter->ShootWithArm();
 	
 	/*AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
@@ -289,4 +291,3 @@ float MainRobot::Cutoff(float num)
 }
 
 START_ROBOT_CLASS(MainRobot);
-

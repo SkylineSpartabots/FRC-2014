@@ -9,8 +9,7 @@ double upDownArmTime = 0.25;
  * If the value is too high, the arm will wrap around (and into) the
  * back of the robot. 
  */
-double shootTime = 0.2;
-
+double shootTime = 0.23;
 Timer* timer = new Timer();
 
 Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
@@ -75,10 +74,9 @@ bool Shooter::GetLimitSwitch() {
 
 void Shooter::BringArmDown() {
 	Reset();
-	
 	timer->Start();
 	while(true) {
-		if (m_limitSwitch->Get() || timer->Get() >= 4) {
+		if (m_limitSwitch->Get() || timer->Get() > 4) {
 			Stop();
 			break;
 		}
@@ -98,14 +96,15 @@ void Shooter::ShootWithArm() {
 	BringArmDown();
 }
 
+
 void Shooter::ShooterPass(){
 	m_collector->PistonPull();
-	Wait(1.25);
+	Wait(.75);
 	m_collector->SpinOutwards();
-	Set(0.2);
-	Wait(0.3);
+	Wait(0.5);
+	Set(-0.2);
+	Wait(0.6);
 	Set(0);
-	Wait(2);
 	m_collector->SpinStop();
 	BringArmDown();
 }
