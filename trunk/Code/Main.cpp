@@ -71,7 +71,7 @@ void MainRobot::InitializeSoftware()
 //bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
-	m_collector->BringArmDown();
+	mm_collector->BringArmDown();
 	m_shooter->BringArmDown();
 	
 	m_collector->SpinInwards();
@@ -83,7 +83,7 @@ void MainRobot::Autonomous()
 	
 	m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.5, 0.0);
-	Wait(1.3);
+	Wait(1.3*2.2);
 	m_drive->Drive(0.0, 0.0); // Stop driving
 	Wait(2);
 	m_shooter->ShootWithArm();
@@ -241,13 +241,14 @@ void MainRobot::OperatorControl()
 			} else {
 				m_shooter->Set(0);
 			}
-			
-				
+							
 			float trigger = shootController->GetTriggerAxis();
 			if (trigger <= -0.4){
 				if (!isShooting) {
-					m_shooter->ShootWithArm();
+					m_compressor->Stop();
 					isShooting = true;
+					m_shooter->ShootWithArm();
+					m_compressor->Start();
 				}
 			} else {
 				isShooting = false;
