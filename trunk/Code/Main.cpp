@@ -71,7 +71,7 @@ void MainRobot::InitializeSoftware()
 //bool autonomousDidShoot = false;
 void MainRobot::Autonomous()
 {
-	mm_collector->BringArmDown();
+	m_collector->BringArmDown();
 	m_shooter->BringArmDown();
 	
 	m_collector->SpinInwards();
