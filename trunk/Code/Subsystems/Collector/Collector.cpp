@@ -1,19 +1,5 @@
 #include "Collector.h"
 
-/* Roflcopter
- 
-   ROFL:ROFL:LOL:ROFL:ROFL
-              ^
-  L     /------------- 
-  O ====          []  \
-  L     \              \
-         \______________]
-            I      I
-        ----------------/
-        
-Plz don't remove Mister Roflcoptor, kthx
- */
-
 Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3,
 		Solenoid *piston4, Compressor *compressor, DigitalInput *pistonLimitSwitch) {
 	m_motor = motor;
@@ -22,7 +8,7 @@ Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Soleno
 	m_piston3 = piston3;
 	m_piston4 = piston4;
 	m_compressor = compressor;
-	m_pistonLimitSwitch = pistonLimitSwitch; 
+	m_pistonLimitSwitch = pistonLimitSwitch;
 }
 
 /*
@@ -71,15 +57,28 @@ void Collector::PistonSlightPush(){
 	m_piston4->Set(true);
 }
 
-void Collector::BringArmDown(){
+bool Collector::BringArmDown(){
+	bool success = true;
+	
 	PistonPush();
-		
+	Timer* timer = new Timer();
+	timer->Start();
 	while (true) {
+		RobotBase::getInstance().GetWatchdog().Feed();
 		if (isFullyExtended()){
 			PistonNeutral();
 			break;
 		}
+		
+		if (timer->Get() > 2.75){
+			PistonNeutral();
+			success = false;
+			break;
+		}
 	}
+	timer->Stop();
+	timer->Reset();
+	return success;
 }
 
 bool Collector::isExtended(){
@@ -91,4 +90,16 @@ bool Collector::isExtended(){
 
 bool Collector::isFullyExtended(){
 	return !m_pistonLimitSwitch->Get();
+}
+
+void Collector::WatchdogWait(double time) {
+	Timer* timer = new Timer();
+	timer->Start();
+	while (true) {
+		RobotBase::getInstance().GetWatchdog().Feed();
+		if (timer->Get() >= time) {
+			break;
+		}
+		Wait(.05);
+	}
 }

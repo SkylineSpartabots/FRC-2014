@@ -1,7 +1,7 @@
 #include "Shooter.h"
 
 double shoot_power = 1;
-double reset_power = 0.15;
+double reset_power = 0.2;
 double upDownArmTime = 0.25;
 
 /* The shootTime value is very important to understand before changing.  
@@ -9,16 +9,14 @@ double upDownArmTime = 0.25;
  * If the value is too high, the arm will wrap around (and into) the
  * back of the robot. 
  */
-double shootTime = 0.23;
-Timer* timer = new Timer();
+double shootTime = 0.22;
 
-Shooter::Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
-		Talon *motorRight2, DigitalInput *limitSwitch, Collector *collector){
+Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector){
 	m_collector = collector;
-	m_motorLeft1 = motorLeft1;
-	m_motorLeft2 = motorLeft2;
+	m_motors = motors;
+	/*m_motorLeft2 = motorLeft2;
 	m_motorRight1 = motorRight1;
-	m_motorRight2 = motorRight2;
+	m_motorRight2 = motorRight2;*/
 	m_limitSwitch = limitSwitch;
 	
 }
@@ -28,17 +26,11 @@ Shooter::~Shooter (){
 }
 
 void Shooter::Set(double power) {
-	m_motorLeft1->Set(power);
-	m_motorLeft2->Set(power);
-	m_motorRight1->Set(power);
-	m_motorRight2->Set(power);
+	m_motors->Set(power);
 }
 
 void Shooter::Shoot (){
-	m_motorLeft1->Set(-shoot_power);
-	m_motorLeft2->Set(-shoot_power);
-	m_motorRight1->Set(-shoot_power);
-	m_motorRight2->Set(-shoot_power);
+	m_motors->Set(-shoot_power);
 	/* Commented out
 	if (m_limitSwitchTop->Get()){
 		m_motorLeft1->Set(0);
@@ -49,17 +41,11 @@ void Shooter::Shoot (){
 }
 
 void Shooter::Stop() {
-	m_motorLeft1->Set(0);
-	m_motorLeft2->Set(0);
-	m_motorRight1->Set(0);
-	m_motorRight2->Set(0);
+	m_motors->Set(0);
 }
 
 void Shooter::Reset() {
-	m_motorLeft1->Set(reset_power);
-	m_motorLeft2->Set(reset_power);
-	m_motorRight1->Set(reset_power);
-	m_motorRight2->Set(reset_power);
+	m_motors->Set(reset_power);
 	/*
 	Wait(shootTime*7.5);
 	m_motorLeft1->Set(0);
@@ -72,17 +58,27 @@ bool Shooter::GetLimitSwitch() {
 	return m_limitSwitch->Get();
 }
 
-void Shooter::BringArmDown() {
+bool Shooter::BringArmDown() {
+	bool success = true;
+	
 	Reset();
+	Timer* timer = new Timer();
 	timer->Start();
 	while(true) {
-		if (m_limitSwitch->Get() || timer->Get() > 4) {
+		RobotBase::getInstance().GetWatchdog().Feed();
+		if (m_limitSwitch->Get()) {
 			Stop();
+			break;
+		}
+		if (timer->Get() > 4) {
+			Stop();
+			success = false;
 			break;
 		}
 	}
 	timer->Stop();
 	timer->Reset();
+	return success;
 }
 
 void Shooter::ShootWithArm() {
@@ -90,21 +86,34 @@ void Shooter::ShootWithArm() {
 	BringArmDown();
 	
 	Shoot();
-	Wait(shootTime);
+	WatchdogWait(shootTime);
 	Stop();
-	Wait(2);
+	WatchdogWait(1);
 	BringArmDown();
 }
 
 
 void Shooter::ShooterPass(){
 	m_collector->PistonPull();
-	Wait(.75);
+	WatchdogWait(.75);
 	m_collector->SpinOutwards();
-	Wait(0.5);
+	WatchdogWait(0.5);
 	Set(-0.2);
-	Wait(0.6);
+	WatchdogWait(0.6);
 	Set(0);
 	m_collector->SpinStop();
 	BringArmDown();
+}
+
+
+void Shooter::WatchdogWait(double time) {
+	Timer* timer = new Timer();
+	timer->Start();
+	while (true) {
+		RobotBase::getInstance().GetWatchdog().Feed();
+		if (timer->Get() >= time) {
+			break;
+		}
+		Wait(.05);
+	}
 }

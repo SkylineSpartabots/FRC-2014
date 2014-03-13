@@ -6,23 +6,20 @@
 
 class Shooter {
 	public:
-		Shooter(Talon *motorLeft1, Talon *motorLeft2, Talon *motorRight1,
-				Talon *motorRight2, DigitalInput *limitSwitch, Collector *collector);
+		Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector);
 		~Shooter();
 		void Shoot();
 		void Set(double power);
 		void Stop();
 		void Reset();
 		void ShootWithArm();
-		void BringArmDown();
+		bool BringArmDown();
 		bool GetLimitSwitch();
 		void ShooterPass();
+		void WatchdogWait(double time);
 	private:
 		Collector *m_collector;
-		Talon *m_motorLeft1;
-		Talon *m_motorLeft2;
-		Talon *m_motorRight1;
-		Talon *m_motorRight2;
+		Talon *m_motors;
 		DigitalInput *m_limitSwitch;
 };
 #endif

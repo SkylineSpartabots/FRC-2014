@@ -3,26 +3,6 @@
 
 #include "WPILib.h"
 
-/*
- SAFETY PIG HAS ARRIVED
-  _._ _..._ .-',     _.._(`))
- '-. `     '  /-._.-'    ',/
-    )         \            '.
-   / _    _    |             \
-  |  a    a    /              |
-  \   .-.                     ;  
-   '-('' ).-'       ,'       ;
-      '-;           |      .'
-         \           \    /
-         | 7  .__  _.-\   \
-         | |  |  ``/  /`  /
-        /,_|  |   /,_/   /
-           /,_/      '`-'
-
- This shouldn't be taken out in the final code,
- If this safety pig is removed, the program will blow up (true story)
-*/
-
 class Collector {
 public:
 	Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3,
@@ -35,9 +15,10 @@ public:
 	void PistonPull();
 	void PistonNeutral();
 	void PistonSlightPush();
-	void BringArmDown();
+	bool BringArmDown();
 	bool isExtended();
-	bool isFullyExtended(); 
+	bool isFullyExtended();
+	void WatchdogWait(double time);
 private:
 	Victor *m_motor;
 	Solenoid *m_piston1;
