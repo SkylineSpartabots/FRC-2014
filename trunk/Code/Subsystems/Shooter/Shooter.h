@@ -6,6 +6,7 @@
 
 class Shooter {
 	public:
+		bool IsAutonomous();
 		Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector);
 		~Shooter();
 		void Shoot();
@@ -14,6 +15,8 @@ class Shooter {
 		void Reset();
 		void ShootWithArm();
 		bool BringArmDown();
+		bool manualAuto;
+		void setManualOff();
 		bool GetLimitSwitch();
 		void ShooterPass();
 		void WatchdogWait(double time);

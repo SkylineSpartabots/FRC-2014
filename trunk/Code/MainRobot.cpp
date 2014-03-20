@@ -88,7 +88,8 @@ void MainRobot::InitializeSoftware()
 
 void MainRobot::Autonomous()
 {
-	/*m_drive->Drive(-0.5, 0.0);
+	m_shooter->manualAuto = true;
+	m_drive->Drive(-0.5, 0.0);
 	WatchdogWait(.35);
 	m_drive->Drive(0.0, 0.0);
 	
@@ -105,7 +106,7 @@ void MainRobot::Autonomous()
 	m_drive->Drive(0.0, 0.0);
 	WatchdogWait(1.5); // Wait 1.5 until stop spinning
 	m_collector->SpinStop();
-	*/
+	
 	//m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.8, 0.0);
 	WatchdogWait(0.7);

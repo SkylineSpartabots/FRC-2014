@@ -3,6 +3,7 @@
 double shoot_power = 1;
 double reset_power = 0.2;
 double upDownArmTime = 0.25;
+bool manualAuto = true;
 
 /* The shootTime value is very important to understand before changing.  
  * It controls the time that the shooter arm is allowed to rotate.
@@ -59,6 +60,9 @@ bool Shooter::GetLimitSwitch() {
 }
 
 bool Shooter::BringArmDown() {
+	if (manualAuto == true)
+	{
+		//Autonomous mode
 	bool success = true;
 	
 	Reset();
@@ -79,6 +83,34 @@ bool Shooter::BringArmDown() {
 	timer->Stop();
 	timer->Reset();
 	return success;
+	}
+	else
+	{
+		//Not autonomous mode
+		bool success = true;
+		
+		Reset();
+		Timer* timer = new Timer();
+		timer->Start();
+		while(true) {
+			if (IsAutonomous())
+			{
+			RobotBase::getInstance().GetWatchdog().Feed();
+			if (m_limitSwitch->Get()) {
+				Stop();
+				break;
+			}
+			if (timer->Get() > 4) {
+				Stop();
+				success = false;
+				break;
+			}
+			}
+		}
+		timer->Stop();
+		timer->Reset();
+		return success;
+	}
 }
 
 void Shooter::ShootWithArm() {
