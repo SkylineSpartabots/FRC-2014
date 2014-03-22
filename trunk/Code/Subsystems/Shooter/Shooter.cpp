@@ -63,26 +63,26 @@ bool Shooter::BringArmDown() {
 	if (manualAuto == true)
 	{
 		//Autonomous mode
-	bool success = true;
-	
-	Reset();
-	Timer* timer = new Timer();
-	timer->Start();
-	while(true && IsAutonomous()) {
-		RobotBase::getInstance().GetWatchdog().Feed();
-		if (m_limitSwitch->Get()) {
-			Stop();
-			break;
+		bool success = true;
+		
+		Reset();
+		Timer* timer = new Timer();
+		timer->Start();
+		while(true && IsAutonomous()) {
+			RobotBase::getInstance().GetWatchdog().Feed();
+			if (m_limitSwitch->Get()) {
+				Stop();
+				break;
+			}
+			if (timer->Get() > 4) {
+				Stop();
+				success = false;
+				break;
+			}
 		}
-		if (timer->Get() > 4) {
-			Stop();
-			success = false;
-			break;
-		}
-	}
-	timer->Stop();
-	timer->Reset();
-	return success;
+		timer->Stop();
+		timer->Reset();
+		return success;
 	}
 	else
 	{
@@ -130,8 +130,8 @@ void Shooter::ShooterPass(){
 	WatchdogWait(.75);
 	m_collector->SpinOutwards();
 	WatchdogWait(0.5);
-	Set(-0.2);
-	WatchdogWait(0.6);
+	Set(-0.3);
+	WatchdogWait(0.45);
 	Set(0);
 	m_collector->SpinStop();
 	BringArmDown();

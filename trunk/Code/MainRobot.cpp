@@ -213,7 +213,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when left trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() >= 0.4) {
 					arcadeY = -arcadeY;
-					arcadeX = -arcadeX;
+					//arcadeX = -arcadeX; TODO May need to be uncommented?
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -275,9 +275,9 @@ void MainRobot::OperatorControl()
 			// (or around the robot).
 			
 			if (shootController->GetAButton()) {
-				m_shooter->Set(-.15);
+				m_shooter->Set(-.25);
 			} else if (shootController->GetBButton()) {
-				m_shooter->Set(.15);
+				m_shooter->Set(.20);
 			} else {
 				m_shooter->Set(0);
 			}
