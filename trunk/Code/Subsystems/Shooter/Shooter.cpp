@@ -3,7 +3,6 @@
 double shoot_power = 1;
 double reset_power = 0.2;
 double upDownArmTime = 0.25;
-bool manualAuto = true;
 
 /* The shootTime value is very important to understand before changing.  
  * It controls the time that the shooter arm is allowed to rotate.
@@ -19,7 +18,7 @@ Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector)
 	m_motorRight1 = motorRight1;
 	m_motorRight2 = motorRight2;*/
 	m_limitSwitch = limitSwitch;
-	
+	manualAuto = true;
 }
 
 Shooter::~Shooter (){
@@ -68,7 +67,7 @@ bool Shooter::BringArmDown() {
 		Reset();
 		Timer* timer = new Timer();
 		timer->Start();
-		while(true && IsAutonomous()) {
+		while(true && manualAuto) {
 			RobotBase::getInstance().GetWatchdog().Feed();
 			if (m_limitSwitch->Get()) {
 				Stop();
@@ -83,8 +82,7 @@ bool Shooter::BringArmDown() {
 		timer->Stop();
 		timer->Reset();
 		return success;
-	}
-	else
+	} else 
 	{
 		//Not autonomous mode
 		bool success = true;
@@ -93,8 +91,6 @@ bool Shooter::BringArmDown() {
 		Timer* timer = new Timer();
 		timer->Start();
 		while(true) {
-			if (IsAutonomous())
-			{
 			RobotBase::getInstance().GetWatchdog().Feed();
 			if (m_limitSwitch->Get()) {
 				Stop();
@@ -104,7 +100,6 @@ bool Shooter::BringArmDown() {
 				Stop();
 				success = false;
 				break;
-			}
 			}
 		}
 		timer->Stop();

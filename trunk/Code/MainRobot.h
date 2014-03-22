@@ -51,5 +51,4 @@ public:
 	void OperatorControl();
 	void Test();
 	float Cutoff(float num);
-	bool manualAutoStop();
 };

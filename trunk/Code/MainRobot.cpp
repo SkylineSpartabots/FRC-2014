@@ -281,7 +281,7 @@ void MainRobot::OperatorControl()
 			} else {
 				m_shooter->Set(0);
 			}
-			/*			
+				
 			float trigger = shootController->GetTriggerAxis();
 			if (trigger <= -0.4){
 				if (!isShooting) {
@@ -293,8 +293,6 @@ void MainRobot::OperatorControl()
 			} else {
 				isShooting = false;
 			}
-			*/
-			
 		} else if (CONTROLLER == JOYSTICKS) { // Xbox is a higher priority, do this later
 			if (DRIVING == TANK) {
 				float leftY = -Cutoff(m_leftStick->GetY());
