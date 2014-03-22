@@ -145,6 +145,7 @@ void MainRobot::Autonomous()
 		
 		Wait(0.5);
 	}*/
+	m_shooter->manualAuto = false;
 }
 
 bool isShooting = false;

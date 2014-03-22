@@ -68,7 +68,7 @@ bool Shooter::BringArmDown() {
 	Reset();
 	Timer* timer = new Timer();
 	timer->Start();
-	while(true) {
+	while(true && IsAutonomous()) {
 		RobotBase::getInstance().GetWatchdog().Feed();
 		if (m_limitSwitch->Get()) {
 			Stop();
