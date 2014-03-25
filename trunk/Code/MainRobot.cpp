@@ -101,8 +101,8 @@ void MainRobot::Autonomous()
 	}
 	
 	m_collector->SpinInwards();
-	m_drive->Drive(0.5, 0.0);
-	WatchdogWait(.55); // drive backwards while spinning, collect ball
+	m_drive->Drive(0.51, 0.0);
+	WatchdogWait(.40); // drive backwards while spinning, collect ball
 	m_drive->Drive(0.0, 0.0);
 	WatchdogWait(1.5); // Wait 1.5 until stop spinning
 	m_collector->SpinStop();
@@ -195,7 +195,7 @@ void MainRobot::OperatorControl()
 				float rightY = -Cutoff(driveController->GetAxis(driveController->RightY));
 				
 				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= 0.4) {
+				if (driveController->GetTriggerAxis() >= -0.4) {
 					leftY = -leftY;
 					rightY = -rightY;
 				}
@@ -211,7 +211,7 @@ void MainRobot::OperatorControl()
 				}
 				
 				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= 0.4) {
+				if (driveController->GetTriggerAxis() >= -0.4) {
 					arcadeY = -arcadeY;
 					//arcadeX = -arcadeX; TODO May need to be uncommented?
 				}
@@ -222,7 +222,7 @@ void MainRobot::OperatorControl()
 				float arcadeX = -Cutoff(driveController->GetRightXAxis());
 				
 				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= 0.4) {
+				if (driveController->GetTriggerAxis() >= -0.4) {
 					arcadeY = -arcadeY;
 					arcadeX = -arcadeX;
 				}
@@ -261,9 +261,10 @@ void MainRobot::OperatorControl()
 			
 			// PASSING
 			// ----------------------------------------------------------------------
-			if(driveController->GetAButton()) {
+			if(driveController->GetRightBumperButton()) {
 				m_shooter->ShooterPass();
 			}
+			
 			
 			// SHOOTING
 			// ----------------------------------------------------------------------
