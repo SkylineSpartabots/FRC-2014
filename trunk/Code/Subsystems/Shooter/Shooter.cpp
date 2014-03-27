@@ -1,7 +1,7 @@
 #include "Shooter.h"
 
 double shoot_power = 1;
-double reset_power = 0.2;
+double reset_power = 0.25;
 double upDownArmTime = 0.25;
 
 /* The shootTime value is very important to understand before changing.  
@@ -9,7 +9,7 @@ double upDownArmTime = 0.25;
  * If the value is too high, the arm will wrap around (and into) the
  * back of the robot. 
  */
-double shootTime = 0.22;
+double shootTime = 0.32;
 
 Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector){
 	m_collector = collector;
@@ -18,7 +18,7 @@ Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector)
 	m_motorRight1 = motorRight1;
 	m_motorRight2 = motorRight2;*/
 	m_limitSwitch = limitSwitch;
-	manualAuto = true;
+	manualAuto = false;
 }
 
 Shooter::~Shooter (){
@@ -82,8 +82,7 @@ bool Shooter::BringArmDown() {
 		timer->Stop();
 		timer->Reset();
 		return success;
-	} else 
-	{
+	} else {
 		//Not autonomous mode
 		bool success = true;
 		
@@ -110,26 +109,32 @@ bool Shooter::BringArmDown() {
 
 void Shooter::ShootWithArm() {
 	m_collector->BringArmDown();
+	SmartDashboard::PutNumber("Shooting", 1);
 	BringArmDown();
+	SmartDashboard::PutNumber("Shooting", 2);
 	
 	Shoot();
 	WatchdogWait(shootTime);
+	SmartDashboard::PutNumber("Shooting", 3);
 	Stop();
 	WatchdogWait(1);
+	SmartDashboard::PutNumber("Shooting", 4);
 	BringArmDown();
+	SmartDashboard::PutNumber("Shooting", 5);
 }
 
 
 void Shooter::ShooterPass(){
-	m_collector->PistonPull();
-	WatchdogWait(.75);
-	m_collector->SpinOutwards();
-	WatchdogWait(0.5);
-	Set(-0.3);
-	WatchdogWait(0.45);
-	Set(0);
-	m_collector->SpinStop();
-	BringArmDown();
+	m_collector->PistonPull(); // Bring collector arm up
+	WatchdogWait(.75); // Wait for arm to go up
+	m_collector->SpinOutwards(); // Start spinning outwards
+	WatchdogWait(0.5); // Wait for half a second (why is this even here?)
+	Set(-0.3); // Make shooter arm go up
+	WatchdogWait(0.45); // Wait 0.45 seconds for arm to go up
+	Set(0); // Stop arm
+	WatchdogWait(0.4); // Wait a little bit with arm up for spin
+	m_collector->SpinStop(); // Stop spinning
+	BringArmDown(); // Bring shooter arm down
 }
 
 

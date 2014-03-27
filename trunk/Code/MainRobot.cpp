@@ -194,8 +194,8 @@ void MainRobot::OperatorControl()
 				float leftY = -Cutoff(driveController->GetAxis(driveController->LeftY));
 				float rightY = -Cutoff(driveController->GetAxis(driveController->RightY));
 				
-				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= -0.4) {
+				// Drive reversal when right trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() <= -0.4) {
 					leftY = -leftY;
 					rightY = -rightY;
 				}
@@ -210,8 +210,8 @@ void MainRobot::OperatorControl()
 					arcadeX = -Cutoff(driveController->GetRightXAxis());
 				}
 				
-				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= -0.4) {
+				// Drive reversal when right trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
 					//arcadeX = -arcadeX; TODO May need to be uncommented?
 				}
@@ -221,8 +221,8 @@ void MainRobot::OperatorControl()
 				float arcadeY = -Cutoff(driveController->GetLeftYAxis());
 				float arcadeX = -Cutoff(driveController->GetRightXAxis());
 				
-				// Drive reversal when left trigger down (go opposite direction)
-				if (driveController->GetTriggerAxis() >= -0.4) {
+				// Drive reversal when right trigger down (go opposite direction)
+				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
 					arcadeX = -arcadeX;
 				}
@@ -276,9 +276,9 @@ void MainRobot::OperatorControl()
 			// (or around the robot).
 			
 			if (shootController->GetAButton()) {
-				m_shooter->Set(-.25);
+				m_shooter->Set(-.15);
 			} else if (shootController->GetBButton()) {
-				m_shooter->Set(.20);
+				m_shooter->Set(.15);
 			} else {
 				m_shooter->Set(0);
 			}
