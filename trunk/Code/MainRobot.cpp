@@ -93,12 +93,10 @@ void MainRobot::Autonomous()
 	WatchdogWait(.35);
 	m_drive->Drive(0.0, 0.0);
 	
-	if (!m_collector->BringArmDown()) {
+	if (!m_collector->BringArmDown())
 		return;
-	}
-	if (!m_shooter->BringArmDown()) {
+	if (!m_shooter->BringArmDown())
 		return;
-	}
 	
 	m_collector->SpinInwards();
 	m_drive->Drive(0.51, 0.0);
@@ -106,13 +104,12 @@ void MainRobot::Autonomous()
 	m_drive->Drive(0.0, 0.0);
 	WatchdogWait(1.5); // Wait 1.5 until stop spinning
 	m_collector->SpinStop();
-	
-	//m_drive->SetSafetyEnabled(false);
 	m_drive->Drive(-0.8, 0.0);
 	WatchdogWait(0.7);
 	m_drive->Drive(0.0, 0.0); // Stop driving
-	/*WatchdogWait(1.4);
-	m_shooter->ShootWithArm();*/
+	WatchdogWait(1.1);
+	m_shooter->ShootWithArm();
+	
 	/*
 	m_drive->Drive(-0.5, 0.0);
 	Wait(2.5);
@@ -213,7 +210,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					//arcadeX = -arcadeX; TODO May need to be uncommented?
+					//arcadeX = -arcadeX;
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -224,7 +221,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					arcadeX = -arcadeX;
+					//arcadeX = -arcadeX; TODO May need to be uncommented?
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);

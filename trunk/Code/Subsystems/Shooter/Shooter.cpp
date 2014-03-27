@@ -1,7 +1,7 @@
 #include "Shooter.h"
 
 double shoot_power = 1;
-double reset_power = 0.25;
+double reset_power = 0.35;
 double upDownArmTime = 0.25;
 
 /* The shootTime value is very important to understand before changing.  
@@ -59,8 +59,7 @@ bool Shooter::GetLimitSwitch() {
 }
 
 bool Shooter::BringArmDown() {
-	if (manualAuto == true)
-	{
+	if (manualAuto == true) {
 		//Autonomous mode
 		bool success = true;
 		
@@ -111,12 +110,15 @@ void Shooter::ShootWithArm() {
 	m_collector->BringArmDown();
 	SmartDashboard::PutNumber("Shooting", 1);
 	BringArmDown();
+	RobotBase::getInstance().GetWatchdog().Feed();
 	SmartDashboard::PutNumber("Shooting", 2);
 	
 	Shoot();
+	RobotBase::getInstance().GetWatchdog().Feed();
 	WatchdogWait(shootTime);
 	SmartDashboard::PutNumber("Shooting", 3);
 	Stop();
+	RobotBase::getInstance().GetWatchdog().Feed();
 	WatchdogWait(1);
 	SmartDashboard::PutNumber("Shooting", 4);
 	BringArmDown();
@@ -128,11 +130,11 @@ void Shooter::ShooterPass(){
 	m_collector->PistonPull(); // Bring collector arm up
 	WatchdogWait(.75); // Wait for arm to go up
 	m_collector->SpinOutwards(); // Start spinning outwards
-	WatchdogWait(0.5); // Wait for half a second (why is this even here?)
+	//WatchdogWait(0.5); // Wait for half a second (why is this even here?)
 	Set(-0.3); // Make shooter arm go up
 	WatchdogWait(0.45); // Wait 0.45 seconds for arm to go up
 	Set(0); // Stop arm
-	WatchdogWait(0.4); // Wait a little bit with arm up for spin
+	WatchdogWait(2.2); // Wait a little bit with arm up for spin
 	m_collector->SpinStop(); // Stop spinning
 	BringArmDown(); // Bring shooter arm down
 }
