@@ -41,13 +41,18 @@ private:
 	
 	Timer *m_timer;
 	
+	
 public:
 	MainRobot();
 	void RobotInit();
 	void InitializeHardware();
 	void InitializeSoftware();
-	static void WatchdogWait(double time);
+	/**
+	 * Use only in autonomous mode
+	 */
+	void WatchdogWait(double time);
 	void Autonomous();
+	void AutonomousDrive(float magnitude, float curve);
 	void OperatorControl();
 	void Test();
 	float Cutoff(float num);

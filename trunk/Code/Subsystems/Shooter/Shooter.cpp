@@ -11,14 +11,11 @@ double upDownArmTime = 0.25;
  */
 double shootTime = 0.32;
 
-Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector){
+Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector, RobotDrive *drive){
 	m_collector = collector;
 	m_motors = motors;
-	/*m_motorLeft2 = motorLeft2;
-	m_motorRight1 = motorRight1;
-	m_motorRight2 = motorRight2;*/
 	m_limitSwitch = limitSwitch;
-	manualAuto = false;
+	m_drive = drive;
 }
 
 Shooter::~Shooter (){
@@ -59,51 +56,27 @@ bool Shooter::GetLimitSwitch() {
 }
 
 bool Shooter::BringArmDown() {
-	if (manualAuto == true) {
-		//Autonomous mode
-		bool success = true;
+	bool success = true;
 		
-		Reset();
-		Timer* timer = new Timer();
-		timer->Start();
-		while(true && manualAuto) {
-			RobotBase::getInstance().GetWatchdog().Feed();
-			if (m_limitSwitch->Get()) {
-				Stop();
-				break;
-			}
-			if (timer->Get() > 4) {
-				Stop();
-				success = false;
-				break;
-			}
+	Reset();
+	Timer* timer = new Timer();
+	timer->Start();
+	while(true) {
+		RobotBase::getInstance().GetWatchdog().Feed();
+		m_drive->Drive(0,0);
+		if (m_limitSwitch->Get()) {
+			Stop();
+			break;
 		}
-		timer->Stop();
-		timer->Reset();
-		return success;
-	} else {
-		//Not autonomous mode
-		bool success = true;
-		
-		Reset();
-		Timer* timer = new Timer();
-		timer->Start();
-		while(true) {
-			RobotBase::getInstance().GetWatchdog().Feed();
-			if (m_limitSwitch->Get()) {
-				Stop();
-				break;
-			}
-			if (timer->Get() > 4) {
-				Stop();
-				success = false;
-				break;
-			}
+		if (timer->Get() > 4) {
+			Stop();
+			success = false;
+			break;
 		}
-		timer->Stop();
-		timer->Reset();
-		return success;
 	}
+	timer->Stop();
+	delete timer;
+	return success;
 }
 
 void Shooter::ShootWithArm() {
@@ -145,9 +118,12 @@ void Shooter::WatchdogWait(double time) {
 	timer->Start();
 	while (true) {
 		RobotBase::getInstance().GetWatchdog().Feed();
+		m_drive->Drive(0,0);
 		if (timer->Get() >= time) {
 			break;
 		}
 		Wait(.05);
 	}
+	timer->Stop();
+	delete timer;
 }

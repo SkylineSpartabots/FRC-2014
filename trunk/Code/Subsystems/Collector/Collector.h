@@ -6,7 +6,7 @@
 class Collector {
 public:
 	Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3,
-			Solenoid *piston4, Compressor *compressor,  DigitalInput *pistonLimitSwitch);
+			Solenoid *piston4, Compressor *compressor,  DigitalInput *pistonLimitSwitch, RobotDrive *drive);
 	//bool GetLimitSwitch();
 	void SpinInwards();
 	void SpinOutwards();
@@ -27,6 +27,7 @@ private:
 	Solenoid *m_piston4;
 	Compressor *m_compressor;
 	DigitalInput *m_pistonLimitSwitch;
+	RobotDrive *m_drive;
 };
 
 #endif

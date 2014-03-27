@@ -1,7 +1,8 @@
 #include "Collector.h"
+#include "../../MainRobot.h"
 
 Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Solenoid *piston3,
-		Solenoid *piston4, Compressor *compressor, DigitalInput *pistonLimitSwitch) {
+		Solenoid *piston4, Compressor *compressor, DigitalInput *pistonLimitSwitch, RobotDrive *drive) {
 	m_motor = motor;
 	m_piston1 = piston1;
 	m_piston2 = piston2;
@@ -9,6 +10,8 @@ Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Soleno
 	m_piston4 = piston4;
 	m_compressor = compressor;
 	m_pistonLimitSwitch = pistonLimitSwitch;
+	m_drive = drive;
+	
 }
 
 /*
@@ -65,6 +68,7 @@ bool Collector::BringArmDown(){
 	timer->Start();
 	while (true) {
 		RobotBase::getInstance().GetWatchdog().Feed();
+		m_drive->Drive(0,0);
 		if (isFullyExtended()){
 			PistonNeutral();
 			break;
@@ -77,7 +81,7 @@ bool Collector::BringArmDown(){
 		}
 	}
 	timer->Stop();
-	timer->Reset();
+	delete timer;
 	return success;
 }
 
@@ -97,9 +101,12 @@ void Collector::WatchdogWait(double time) {
 	timer->Start();
 	while (true) {
 		RobotBase::getInstance().GetWatchdog().Feed();
+		m_drive->Drive(0,0);
 		if (timer->Get() >= time) {
 			break;
 		}
 		Wait(.05);
 	}
+	timer->Stop();
+	delete timer;
 }

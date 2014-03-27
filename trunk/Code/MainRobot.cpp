@@ -9,21 +9,28 @@
 int CONTROLLER = XBOX;
 int DRIVING = ARCADE2;
 
+float autonomousDriveMagnitude = 0;
+float autonomousDriveCurve = 0;
+
 MainRobot::MainRobot() {
 	InitializeHardware();
 	InitializeSoftware();
 }
 
+// Use only in autonomous mode
 void MainRobot::WatchdogWait(double time) {
 	Timer* timer = new Timer();
 	timer->Start();
 	while (true) {
 		RobotBase::getInstance().GetWatchdog().Feed();
+		m_drive->Drive(autonomousDriveMagnitude, autonomousDriveCurve);
 		if (timer->Get() >= time) {
 			break;
 		}
 		Wait(.05);
 	}
+	timer->Stop();
+	delete timer;
 }
 
 void MainRobot::RobotInit() {
@@ -37,7 +44,6 @@ void MainRobot::InitializeHardware()
 							 Ports::DigitalSidecar::Pwm7, 
 							 Ports::DigitalSidecar::Pwm10, 
 							 Ports::DigitalSidecar::Pwm9);
-	m_drive->SetSafetyEnabled(true);
 	if (CONTROLLER == XBOX) {
 		driveController = new XboxController(Ports::Computer::Usb1);
 		shootController = new XboxController(Ports::Computer::Usb2);
@@ -61,7 +67,6 @@ void MainRobot::InitializeHardware()
 	m_collectorMotor->SetSafetyEnabled(true);
 	m_shooterMotors = new Talon(Ports::DigitalSidecar::Pwm4);   // This one Talon object powers
 																// all four shooter motors
-	m_shooterMotors->SetSafetyEnabled(true);
 	
 	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio11);
 	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio12);
@@ -72,50 +77,50 @@ void MainRobot::InitializeSoftware()
 {
 	//m_claw = new Claw(m_clawMotor);
 	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2,
-			m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch);
-	m_shooter = new Shooter(m_shooterMotors, m_shooterLimitSwitch, m_collector);
+			m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch, m_drive);
+	m_shooter = new Shooter(m_shooterMotors, m_shooterLimitSwitch, m_collector, m_drive);
 	//netTable = NetworkTable::GetTable("VisionTargetInfo");
 	//netTable->PutNumber("Driving", DRIVING);
 	m_timer = new Timer();
 }
 
-// state 1 = drive, wait 0.35
-// state 2 = drop collector and shooter
-// state 3 = drive forward, load ball
-// state 4 = drive backward to shooting distance
-// state 5 = shoot
-
+void MainRobot::AutonomousDrive(float magnitude, float curve) {
+	m_drive->Drive(magnitude, curve);
+	autonomousDriveMagnitude = magnitude;
+	autonomousDriveCurve = curve;
+}
 
 void MainRobot::Autonomous()
 {
-	m_shooter->manualAuto = true;
-	m_drive->Drive(-0.5, 0.0);
-	WatchdogWait(.35);
-	m_drive->Drive(0.0, 0.0);
+	// DO NOT use m_drive in autonomous mode, use the MainRobot#AutonomousDrive(float magnitude, float curve) instead
 	
+	// Bring collector arm down
 	if (!m_collector->BringArmDown())
 		return;
+	// Bring shooter arm down to let ball drop into cradle
 	if (!m_shooter->BringArmDown())
 		return;
 	
-	m_collector->SpinInwards();
-	m_drive->Drive(0.51, 0.0);
-	WatchdogWait(.40); // drive backwards while spinning, collect ball
-	m_drive->Drive(0.0, 0.0);
-	WatchdogWait(1.5); // Wait 1.5 until stop spinning
-	m_collector->SpinStop();
-	m_drive->Drive(-0.8, 0.0);
-	WatchdogWait(0.7);
-	m_drive->Drive(0.0, 0.0); // Stop driving
-	WatchdogWait(1.1);
+	// Drive towards goal
+	AutonomousDrive(-0.8, 0.0);
+	WatchdogWait(0.5);
+	AutonomousDrive(0.0, 0.0);
+	
+	// Shoot
+	WatchdogWait(0.4);
 	m_shooter->ShootWithArm();
 	
+	// DRIVE FORWARD ONLY CODE
+	// ----------------------------------------------------------------------
 	/*
-	m_drive->Drive(-0.5, 0.0);
-	Wait(2.5);
-	m_drive->Drive(0.0, 0.0);*/
+	AutonomousDrive(-0.8, 0.0);
+	Wait(1);
+	AutonomousDrive(0.0, 0.0);*/
 	
-	/*AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
+	// CAMERA CODE
+	// ----------------------------------------------------------------------
+	/*
+	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
 	
 	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
 	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
@@ -142,15 +147,12 @@ void MainRobot::Autonomous()
 		
 		Wait(0.5);
 	}*/
-	m_shooter->manualAuto = false;
 }
 
 bool isShooting = false;
 //int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
-	//m_drive->SetSafetyEnabled(true);
-	
 	m_timer->Stop();
 	m_timer->Reset();
 	m_timer->Start();
@@ -254,16 +256,13 @@ void MainRobot::OperatorControl()
 				m_collector->SpinStop();
 			}
 			
-
-			
 			// PASSING
 			// ----------------------------------------------------------------------
 			if(driveController->GetRightBumperButton()) {
 				m_shooter->ShooterPass();
 			}
 			
-			
-			// SHOOTING
+			// SHOOTER ARM LIFT / LOWER SLOWLY
 			// ----------------------------------------------------------------------
 			// The Set() values below (-.15 & .15) indicate the power
 			// to the motor (15%) and are very important to understand
@@ -279,7 +278,10 @@ void MainRobot::OperatorControl()
 			} else {
 				m_shooter->Set(0);
 			}
-				
+			
+			// SHOOTING
+			// ----------------------------------------------------------------------
+			
 			float trigger = shootController->GetTriggerAxis();
 			if (trigger <= -0.4){
 				if (!isShooting) {
@@ -291,7 +293,7 @@ void MainRobot::OperatorControl()
 			} else {
 				isShooting = false;
 			}
-		} else if (CONTROLLER == JOYSTICKS) { // Xbox is a higher priority, do this later
+		} else if (CONTROLLER == JOYSTICKS) { // Xbox is a higher priority, do this later/never
 			if (DRIVING == TANK) {
 				float leftY = -Cutoff(m_leftStick->GetY());
 				float rightY = -Cutoff(m_leftStick->GetX());
@@ -310,7 +312,6 @@ void MainRobot::OperatorControl()
 			}
 			
 		}
-
 		SmartDashboard::PutBoolean("shooter limit switch",m_shooter->GetLimitSwitch());
 		Wait(0.005); // wait for a motor update time
 	}

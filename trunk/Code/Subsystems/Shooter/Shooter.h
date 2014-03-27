@@ -6,7 +6,7 @@
 
 class Shooter {
 	public:
-		Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector);
+		Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector, RobotDrive *drive);
 		~Shooter();
 		void Shoot();
 		void Set(double power);
@@ -17,10 +17,10 @@ class Shooter {
 		bool GetLimitSwitch();
 		void ShooterPass();
 		void WatchdogWait(double time);
-		bool manualAuto;
 	private:
 		Collector *m_collector;
 		Talon *m_motors;
 		DigitalInput *m_limitSwitch;
+		RobotDrive *m_drive;
 };
 #endif
