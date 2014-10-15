@@ -26,20 +26,12 @@ private:
 	Solenoid *m_solenoid3;
 	Solenoid *m_solenoid4;
 	
-	//Victor *m_clawMotor;
-	
 	Talon *m_shooterMotors;
 	DigitalInput *m_shooterLimitSwitch; 
 	DigitalInput *m_pistonLimitSwitch; 
 	
-	//Claw *m_claw;
 	Collector *m_collector;
 	Shooter *m_shooter;
-	
-	// Network Table
-	//NetworkTable *netTable;
-	
-	Timer *m_timer;
 	
 	
 public:
@@ -47,10 +39,7 @@ public:
 	void RobotInit();
 	void InitializeHardware();
 	void InitializeSoftware();
-	/**
-	 * Use only in autonomous mode
-	 */
-	void WatchdogWait(double time);
+	void WatchdogWait(double time); // Use only in autonomous mode
 	void Autonomous();
 	void AutonomousDrive(float magnitude, float curve);
 	void OperatorControl();

@@ -79,9 +79,6 @@ void MainRobot::InitializeSoftware()
 	m_collector = new Collector(m_collectorMotor, m_solenoid1, m_solenoid2,
 			m_solenoid3, m_solenoid4, m_compressor, m_pistonLimitSwitch, m_drive);
 	m_shooter = new Shooter(m_shooterMotors, m_shooterLimitSwitch, m_collector, m_drive);
-	//netTable = NetworkTable::GetTable("VisionTargetInfo");
-	//netTable->PutNumber("Driving", DRIVING);
-	m_timer = new Timer();
 }
 
 void MainRobot::AutonomousDrive(float magnitude, float curve) {
@@ -108,7 +105,7 @@ void MainRobot::Autonomous()
 	
 	// Shoot
 	WatchdogWait(0.4);
-	m_shooter->ShootWithArm();
+	m_shooter->ShootWithArm(false);
 	
 	// DRIVE FORWARD ONLY CODE
 	// ----------------------------------------------------------------------
@@ -116,74 +113,14 @@ void MainRobot::Autonomous()
 	AutonomousDrive(-0.8, 0.0);
 	Wait(1);
 	AutonomousDrive(0.0, 0.0);*/
-	
-	// CAMERA CODE
-	// ----------------------------------------------------------------------
-	/*
-	AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
-	
-	// Inside this while loop, the ribit will check if the best detected target is hot, if not then it
-	// will wait until it is hot, once it is hot, it will shoot. Once it shoots, it will not attempt
-	// to shoot again
-	int autonomousLifetime = 0;
-	bool autonomousDidShoot = false;
-	while (IsAutonomous() && IsEnabled()) {
-		ColorImage *image = camera.GetImage();
-		
-		if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
-			continue;
-		}
-		
-		SmartDashboard::PutNumber("Autonomous Lifetime", ++autonomousLifetime);
-		
-		TargetReport* report = Vision::process(image);
-		netTable->PutBoolean("Target Hot", report->Hot);
-		netTable->PutNumber("Target Distance", report->distance);
-		
-		if (!autonomousDidShoot && report->Hot) {
-			autonomousDidShoot = true;
-			m_shooter->ShootWithArm();
-		}
-		
-		Wait(0.5);
-	}*/
 }
 
 bool isShooting = false;
-//int nextImageCheck = 0;
 void MainRobot::OperatorControl()
 {
-	m_timer->Stop();
-	m_timer->Reset();
-	m_timer->Start();
-		
 	int operatorControlLifetime = 0;
-	//AxisCamera &camera = AxisCamera::GetInstance("10.29.76.11");
-	
 	while (IsOperatorControl()) {
-		/*int driving = (int) netTable->GetNumber("Driving");
-		if (driving != DRIVING) {
-			DRIVING = driving;
-		}*/
 		SmartDashboard::PutNumber("Operator Lifetime", ++operatorControlLifetime);	
-		SmartDashboard::PutNumber("Countdown Timer", 140 - m_timer->Get());
-		if(130 - m_timer->Get() < 10)
-			SmartDashboard::PutString("Countdown Alert", "Raise arm");
-		/*
-		nextImageCheck++;
-		if (nextImageCheck >= 800) {
-			nextImageCheck = 0;
-			ColorImage *image = camera.GetImage();
-					
-			if ((image == (void *) 0) || (image->GetWidth() == 0) || (image->GetHeight() == 0)) {
-				continue;
-			}
-			
-			TargetReport* report = Vision::process(image);
-			netTable->PutBoolean("Target Hot", report->Hot);
-			netTable->PutNumber("Target Distance", report->distance);
-		}*/
-		
 		if (CONTROLLER == XBOX) {
 			// DRIVING
 			// ----------------------------------------------------------------------
@@ -212,7 +149,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					//arcadeX = -arcadeX;
+					arcadeX = -arcadeX;
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -223,7 +160,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					//arcadeX = -arcadeX; TODO May need to be uncommented?
+					arcadeX = -arcadeX; // May need to be uncommented?
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -287,7 +224,14 @@ void MainRobot::OperatorControl()
 				if (!isShooting) {
 					m_compressor->Stop();
 					isShooting = true;
-					m_shooter->ShootWithArm();
+					m_shooter->ShootWithArm(false);
+					m_compressor->Start();
+				}
+			} else if (trigger >= 0.4){
+				if (!isShooting) {
+					m_compressor->Stop();
+					isShooting = true;
+					m_shooter->ShootWithArm(true);
 					m_compressor->Start();
 				}
 			} else {
@@ -312,7 +256,7 @@ void MainRobot::OperatorControl()
 			}
 			
 		}
-		SmartDashboard::PutBoolean("shooter limit switch",m_shooter->GetLimitSwitch());
+		SmartDashboard::PutBoolean("shooter limit switch", m_shooter->GetLimitSwitch());
 		Wait(0.005); // wait for a motor update time
 	}
 }

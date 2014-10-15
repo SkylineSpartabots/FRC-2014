@@ -12,7 +12,7 @@ class Shooter {
 		void Set(double power);
 		void Stop();
 		void Reset();
-		void ShootWithArm();
+		void ShootWithArm(bool steepShot);
 		bool BringArmDown();
 		bool GetLimitSwitch();
 		void ShooterPass();

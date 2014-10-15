@@ -10,6 +10,7 @@ double upDownArmTime = 0.25;
  * back of the robot. 
  */
 double shootTime = 0.32;
+double shootTimeSteep = 0.23;
 
 Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector, RobotDrive *drive){
 	m_collector = collector;
@@ -26,15 +27,8 @@ void Shooter::Set(double power) {
 	m_motors->Set(power);
 }
 
-void Shooter::Shoot (){
+void Shooter::Shoot(){
 	m_motors->Set(-shoot_power);
-	/* Commented out
-	if (m_limitSwitchTop->Get()){
-		m_motorLeft1->Set(0);
-		m_motorLeft2->Set(0);
-		m_motorRight1->Set(0);
-		m_motorRight2->Set(0);
-	}*/
 }
 
 void Shooter::Stop() {
@@ -43,12 +37,6 @@ void Shooter::Stop() {
 
 void Shooter::Reset() {
 	m_motors->Set(reset_power);
-	/*
-	Wait(shootTime*7.5);
-	m_motorLeft1->Set(0);
-	m_motorLeft2->Set(0);
-	m_motorRight1->Set(0);
-	m_motorRight2->Set(0);*/
 }
 
 bool Shooter::GetLimitSwitch() {
@@ -73,13 +61,14 @@ bool Shooter::BringArmDown() {
 			success = false;
 			break;
 		}
+		WatchdogWait(.005);
 	}
 	timer->Stop();
 	delete timer;
 	return success;
 }
 
-void Shooter::ShootWithArm() {
+void Shooter::ShootWithArm(bool steepShot) {
 	m_collector->BringArmDown();
 	SmartDashboard::PutNumber("Shooting", 1);
 	BringArmDown();
@@ -88,7 +77,7 @@ void Shooter::ShootWithArm() {
 	
 	Shoot();
 	RobotBase::getInstance().GetWatchdog().Feed();
-	WatchdogWait(shootTime);
+	WatchdogWait(steepShot ? shootTimeSteep : shootTime);
 	SmartDashboard::PutNumber("Shooting", 3);
 	Stop();
 	RobotBase::getInstance().GetWatchdog().Feed();
@@ -98,12 +87,10 @@ void Shooter::ShootWithArm() {
 	SmartDashboard::PutNumber("Shooting", 5);
 }
 
-
 void Shooter::ShooterPass(){
 	m_collector->PistonPull(); // Bring collector arm up
 	WatchdogWait(.75); // Wait for arm to go up
 	m_collector->SpinOutwards(); // Start spinning outwards
-	//WatchdogWait(0.5); // Wait for half a second (why is this even here?)
 	Set(-0.3); // Make shooter arm go up
 	WatchdogWait(0.45); // Wait 0.45 seconds for arm to go up
 	Set(0); // Stop arm
@@ -122,7 +109,7 @@ void Shooter::WatchdogWait(double time) {
 		if (timer->Get() >= time) {
 			break;
 		}
-		Wait(.05);
+		Wait(.005);
 	}
 	timer->Stop();
 	delete timer;

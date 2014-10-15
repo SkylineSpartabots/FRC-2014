@@ -16,8 +16,7 @@ public:
 	void PistonNeutral();
 	void PistonSlightPush();
 	bool BringArmDown();
-	bool isExtended();
-	bool isFullyExtended();
+	bool IsExtended();
 	void WatchdogWait(double time);
 private:
 	Victor *m_motor;

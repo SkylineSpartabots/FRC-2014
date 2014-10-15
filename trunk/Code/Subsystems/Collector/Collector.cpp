@@ -69,7 +69,7 @@ bool Collector::BringArmDown(){
 	while (true) {
 		RobotBase::getInstance().GetWatchdog().Feed();
 		m_drive->Drive(0,0);
-		if (isFullyExtended()){
+		if (IsExtended()){
 			PistonNeutral();
 			break;
 		}
@@ -79,20 +79,14 @@ bool Collector::BringArmDown(){
 			success = false;
 			break;
 		}
+		WatchdogWait(.005);
 	}
 	timer->Stop();
 	delete timer;
 	return success;
 }
 
-bool Collector::isExtended(){
-	if (m_piston1->Get() == true && m_piston2->Get() == false && m_piston3->Get() == false && m_piston4->Get() == true){
-		return true;
-	}
-	else return false;
-}
-
-bool Collector::isFullyExtended(){
+bool Collector::IsExtended(){
 	return !m_pistonLimitSwitch->Get();
 }
 
@@ -105,7 +99,7 @@ void Collector::WatchdogWait(double time) {
 		if (timer->Get() >= time) {
 			break;
 		}
-		Wait(.05);
+		Wait(.005);
 	}
 	timer->Stop();
 	delete timer;
