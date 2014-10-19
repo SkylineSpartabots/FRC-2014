@@ -8,11 +8,11 @@ class Shooter {
 	public:
 		Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector, RobotDrive *drive);
 		~Shooter();
-		void Shoot();
+		void Shoot(double shoot_power);
 		void Set(double power);
 		void Stop();
 		void Reset();
-		void ShootWithArm(bool steepShot);
+		void ShootWithArm(bool steepShot, double shoot_power);
 		bool BringArmDown();
 		bool GetLimitSwitch();
 		void ShooterPass();

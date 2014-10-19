@@ -68,7 +68,7 @@ void MainRobot::InitializeHardware()
 	m_shooterMotors = new Talon(Ports::DigitalSidecar::Pwm4);   // This one Talon object powers
 																// all four shooter motors
 	
-	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio11);
+	m_pistonLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio3);
 	m_shooterLimitSwitch = new DigitalInput(Ports::DigitalSidecar::Gpio12);
 }
 
@@ -100,12 +100,12 @@ void MainRobot::Autonomous()
 	
 	// Drive towards goal
 	AutonomousDrive(-0.8, 0.0);
-	WatchdogWait(0.5);
+	WatchdogWait(0.65);
 	AutonomousDrive(0.0, 0.0);
 	
 	// Shoot
-	WatchdogWait(0.4);
-	m_shooter->ShootWithArm(false);
+	WatchdogWait(1.75);
+	m_shooter->ShootWithArm(false, 0.825);
 	
 	// DRIVE FORWARD ONLY CODE
 	// ----------------------------------------------------------------------
@@ -149,7 +149,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					arcadeX = -arcadeX;
+					//arcadeX = -arcadeX;
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -160,7 +160,7 @@ void MainRobot::OperatorControl()
 				// Drive reversal when right trigger down (go opposite direction)
 				if (driveController->GetTriggerAxis() <= -0.4) {
 					arcadeY = -arcadeY;
-					arcadeX = -arcadeX; // May need to be uncommented?
+					//arcadeX = -arcadeX; // May need to be uncommented?
 				}
 				
 				m_drive->ArcadeDrive(arcadeY, arcadeX);
@@ -220,18 +220,18 @@ void MainRobot::OperatorControl()
 			// ----------------------------------------------------------------------
 			
 			float trigger = shootController->GetTriggerAxis();
-			if (trigger <= -0.4){
+			if (trigger <= -0.4){ // High shot
 				if (!isShooting) {
 					m_compressor->Stop();
 					isShooting = true;
-					m_shooter->ShootWithArm(false);
+					m_shooter->ShootWithArm(false, 1);
 					m_compressor->Start();
 				}
-			} else if (trigger >= 0.4){
+			} else if (trigger >= 0.4){ // Low shot
 				if (!isShooting) {
 					m_compressor->Stop();
 					isShooting = true;
-					m_shooter->ShootWithArm(true);
+					m_shooter->ShootWithArm(true, 0.9);
 					m_compressor->Start();
 				}
 			} else {
@@ -256,6 +256,7 @@ void MainRobot::OperatorControl()
 			}
 			
 		}
+		SmartDashboard::PutBoolean("Pistons extended", m_collector->IsExtended ());
 		SmartDashboard::PutBoolean("shooter limit switch", m_shooter->GetLimitSwitch());
 		Wait(0.005); // wait for a motor update time
 	}

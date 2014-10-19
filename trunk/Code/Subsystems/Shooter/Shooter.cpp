@@ -1,6 +1,5 @@
 #include "Shooter.h"
 
-double shoot_power = 1;
 double reset_power = 0.35;
 double upDownArmTime = 0.25;
 
@@ -9,8 +8,8 @@ double upDownArmTime = 0.25;
  * If the value is too high, the arm will wrap around (and into) the
  * back of the robot. 
  */
-double shootTime = 0.32;
-double shootTimeSteep = 0.23;
+double shootTime = 0.34;
+double shootTimeSteep = 0.192;
 
 Shooter::Shooter(Talon *motors, DigitalInput *limitSwitch, Collector *collector, RobotDrive *drive){
 	m_collector = collector;
@@ -27,7 +26,7 @@ void Shooter::Set(double power) {
 	m_motors->Set(power);
 }
 
-void Shooter::Shoot(){
+void Shooter::Shoot(double shoot_power){
 	m_motors->Set(-shoot_power);
 }
 
@@ -68,14 +67,17 @@ bool Shooter::BringArmDown() {
 	return success;
 }
 
-void Shooter::ShootWithArm(bool steepShot) {
-	m_collector->BringArmDown();
-	SmartDashboard::PutNumber("Shooting", 1);
+void Shooter::ShootWithArm(bool steepShot, double shoot_power) {
+	SmartDashboard::PutNumber("Shooting", 0);
+	
+	//bool bringArmDownSuccess = m_collector->BringArmDown();
+	SmartDashboard::PutNumber("Shooting 1", 1);
 	BringArmDown();
+	//SmartDashboard::PutBoolean("Bring arm down success", bringArmDownSuccess);
 	RobotBase::getInstance().GetWatchdog().Feed();
 	SmartDashboard::PutNumber("Shooting", 2);
 	
-	Shoot();
+	Shoot(shoot_power);
 	RobotBase::getInstance().GetWatchdog().Feed();
 	WatchdogWait(steepShot ? shootTimeSteep : shootTime);
 	SmartDashboard::PutNumber("Shooting", 3);
@@ -85,16 +87,19 @@ void Shooter::ShootWithArm(bool steepShot) {
 	SmartDashboard::PutNumber("Shooting", 4);
 	BringArmDown();
 	SmartDashboard::PutNumber("Shooting", 5);
+
+	SmartDashboard::PutNumber("Shooting 1", 0);
+	SmartDashboard::PutBoolean("Extended", false);
 }
 
 void Shooter::ShooterPass(){
 	m_collector->PistonPull(); // Bring collector arm up
-	WatchdogWait(.75); // Wait for arm to go up
+	WatchdogWait(1.9); // Wait for arm to go up
 	m_collector->SpinOutwards(); // Start spinning outwards
 	Set(-0.3); // Make shooter arm go up
 	WatchdogWait(0.45); // Wait 0.45 seconds for arm to go up
 	Set(0); // Stop arm
-	WatchdogWait(2.2); // Wait a little bit with arm up for spin
+	WatchdogWait(1.5); // Wait a little bit with arm up for spin
 	m_collector->SpinStop(); // Stop spinning
 	BringArmDown(); // Bring shooter arm down
 }

@@ -11,7 +11,7 @@ Collector::Collector(Victor *motor, Solenoid *piston1, Solenoid *piston2, Soleno
 	m_compressor = compressor;
 	m_pistonLimitSwitch = pistonLimitSwitch;
 	m_drive = drive;
-	
+	m_motor->SetSafetyEnabled(false);
 }
 
 /*
@@ -61,6 +61,10 @@ void Collector::PistonSlightPush(){
 }
 
 bool Collector::BringArmDown(){
+	if (IsExtended()) {
+		return true;
+	}
+	
 	bool success = true;
 	
 	PistonPush();
@@ -88,6 +92,10 @@ bool Collector::BringArmDown(){
 
 bool Collector::IsExtended(){
 	return !m_pistonLimitSwitch->Get();
+}
+
+bool Collector::GetLimitSwitch() {
+	return m_pistonLimitSwitch->Get();
 }
 
 void Collector::WatchdogWait(double time) {
